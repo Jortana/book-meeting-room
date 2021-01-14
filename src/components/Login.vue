@@ -2,7 +2,6 @@
   <div id="wrapper">
     <div id="main">
       <div id="login"  @keyup.enter="onSubmit('ruleForm')">
-<!--        <div>logo</div>-->
         <h2>会议室管理系统</h2>
         <el-form ref="ruleForm" :model="ruleForm" :rules="rules">
           <el-form-item class="a-left" prop="userNum">
@@ -19,16 +18,12 @@
           </el-form-item>
         </el-form>
       </div>
-<!--      <div id="footer">-->
-<!--        <div id="footer-text">-->
-<!--          Copyright © 2010-2020 All rights reserved. 南京师范大学教育科学学院 版权所有<br>联系方式：025-83598571（随园） 025-85891035（仙林）-->
-<!--        </div>-->
-<!--      </div>-->
     </div>
   </div>
 </template>
 
 <script>
+let sha1 = require('js-sha1')
 export default {
   name: 'Login',
   created () {
@@ -58,10 +53,11 @@ export default {
     onSubmit (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          let password = sha1(this.ruleForm.password)
           this.$axios
             .post('/login', {
               userNum: this.ruleForm.userNum,
-              password: this.ruleForm.password
+              password: password
             })
             .then(successResponse => {
               let data = successResponse.data.data
@@ -83,7 +79,7 @@ export default {
                 this.$router.go(0)
               }
             })
-            .catch(failResponse => {
+            .catch(() => {
             })
         } else {
           return false
@@ -96,7 +92,6 @@ export default {
 
 <style scoped>
 #wrapper {
-  /*background: #2b3137;*/
   margin: 0 auto;
 }
 
@@ -141,6 +136,7 @@ export default {
 }
 
 #login h2 {
+  color: #fff;
   margin: -10px 0 0;
 }
 

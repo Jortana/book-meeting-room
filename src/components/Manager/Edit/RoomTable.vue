@@ -17,22 +17,23 @@
       @updateRoom="updateRoom"
     ></room-table-row>
     <!-- 添加教室行 -->
-    <div class="row">
+    <div class="row" v-if="isAdding===false">
       <div></div>
       <div></div>
       <div></div>
       <div></div>
       <div></div>
       <div>
-        <el-button size="mini" type="primary">添加教室</el-button>
+        <el-button size="mini" type="primary" @click="isAdding=true">添加教室</el-button>
       </div>
     </div>
-<!--    {{ building.room }}-->
+    <add-room v-else class="row" :isAdding.sync="isAdding" :buildingID="building.id"></add-room>
   </div>
 </template>
 
 <script>
 import RoomTableRow from './RoomTableRow'
+import AddRoom from './AddRoom'
 export default {
   name: 'RoomTable',
   props: {
@@ -44,21 +45,26 @@ export default {
     }
   },
   data () {
+    console.log(this.building)
     return {
-      roomInfos: this.building.room
+      roomInfos: this.building.room,
+      isAdding: false
     }
   },
   methods: {
     updateRoom (roomInfo, index) {
       let { explain, capacity, auditor, picture } = roomInfo
+      console.log(roomInfo)
+      console.log(index)
       this.roomInfos[index].explain = explain
       this.roomInfos[index].capacity = capacity
       this.roomInfos[index].auditor = auditor
-      this.roomInfos[index].picture = picture
+      this.roomInfos[index].picture = picture === undefined ? this.roomInfos[index].picture : picture
     }
   },
   components: {
-    RoomTableRow
+    RoomTableRow,
+    AddRoom
   }
 }
 </script>
@@ -76,6 +82,8 @@ export default {
   grid-template-columns: repeat(6, 1fr);
   text-align: center;
   height: 5vh;
+  min-height: 50px;
+  max-height: 50px;
   border-bottom: 1px solid #DCDFE6;
   justify-content: center;
   align-content: center;

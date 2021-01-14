@@ -16,12 +16,12 @@
         placement="top"
         ref="img"
         width="300"
-        trigger="hover">
+        trigger="click">
         <div class="img">
           <img :src="curRoomInfo['picture']" :alt="curRoomInfo['picture'].split('/').pop()">
         </div>
       </el-popover>
-      <span v-popover:img>{{ curRoomInfo['picture'] !== null ? curRoomInfo['picture'].split('/').pop() : '无' }}</span>
+      <span v-popover:img>{{ curRoomInfo['picture'] !== null ? '点击查看图片' : '无' }}</span>
     </div>
     <div>
       <el-button size="mini" type="primary" plain @click="isEditing = true">修改信息</el-button>
@@ -63,13 +63,12 @@
         <span
           v-for="(auditor, index) in editForm.auditor"
           :key="index">
-        <span v-if="index !== 0">，</span>{{ auditor.userName }}
-      </span>
+          <span v-if="index !== 0">，</span>{{ auditor.userName }}
+        </span>
       </el-button>
     </el-form-item>
     <el-form-item prop="picture" class="input-cell img-cell">
         <el-upload
-          class="upload-demo"
           action=""
           :http-request="uploadImg"
           :on-success="imgSuccessRes"
@@ -117,9 +116,15 @@ export default {
     },
     roomInfo: {
       handler (newRoomInfo) {
+        console.log('watch')
         this.curRoomInfo = newRoomInfo
       },
       deep: true
+    }
+  },
+  computed: {
+    changedRoomInfo () {
+      return this.roomInfo
     }
   },
   data () {
@@ -247,8 +252,8 @@ export default {
         } else {
           this.$message({
             showClose: true,
-            message: '服务器出错',
-            type: 'error',
+            message: '请填写红框中的内容',
+            type: 'warning',
             duration: 1500,
             offset: 80
           })
@@ -273,8 +278,11 @@ export default {
       })
         .then(successResponse => {
           console.log(successResponse.data)
-          if (successResponse.data === true) {
-            // this.$emit('updateRoom', {picture: }, this.index)
+          if (successResponse.data.success === true) {
+            // this.curRoomInfo = this.changedRoomInfo
+            let roomInfo = Object.assign({}, this.editForm)
+            roomInfo.picture = successResponse.data.url
+            this.$emit('updateRoom', roomInfo, this.index)
             this.$message({
               showClose: true,
               message: '上传成功',
@@ -285,7 +293,7 @@ export default {
           } else {
             this.$message({
               showClose: true,
-              message: '上传失败',
+              message: '图片过大，上传失败',
               type: 'error',
               duration: 1500,
               offset: 80

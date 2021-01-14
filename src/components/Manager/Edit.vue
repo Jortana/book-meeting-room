@@ -14,7 +14,7 @@
         :label="building.name"
         :name="String(building.id)">
         <!-- 教室列表 -->
-        <room-table :building.sync="building"></room-table>
+        <room-table :building.sync="building" @getNewRoomInfo="getAllRoom"></room-table>
       </el-tab-pane>
     </el-tabs>
   </main>

@@ -11,18 +11,15 @@
       text-color="#BBCDC3"
       background-color="#30694A"
       active-text-color="#FDCA00">
-<!--      <el-menu-item id="logo">-->
-<!--        <div>-->
-<!--          <img src="../assets/logo_white.png" alt="logo">-->
-<!--        </div>-->
-<!--      </el-menu-item>-->
       <el-menu-item class="bold-border" v-for="(item, i) in navList" :key="i" :index="item.index">
         {{ item.name }}
       </el-menu-item>
       <el-submenu index="user" id="user">
         <template slot="title"><span class="sub-title">{{ user.name }}</span></template>
+        <el-menu-item class="sub-menu" @click="showChangePassword">修改密码</el-menu-item>
         <el-menu-item class="sub-menu" @click="showLogOut">退出</el-menu-item>
       </el-submenu>
+      <!-- 确认退出的dialog -->
       <el-dialog
         title="确认退出"
         :visible.sync="logOutVisible"
@@ -34,12 +31,15 @@
           <el-button type="primary" @click="logOut">确 定</el-button>
         </span>
       </el-dialog>
+      <!-- 修改密码的dialog -->
+      <change-password v-if="changePasswordVisible" :visible.sync="changePasswordVisible"></change-password>
     </el-menu>
     </div>
   </div>
 </template>
 
 <script>
+import ChangePassword from './User/ChangePassword'
 export default {
   name: 'NavMenu',
   computed: {
@@ -68,7 +68,8 @@ export default {
     return {
       navList: navList,
       user: user,
-      logOutVisible: false
+      logOutVisible: false,
+      changePasswordVisible: false
     }
   },
   methods: {
@@ -78,7 +79,13 @@ export default {
     logOut () {
       this.$store.commit('logOut')
       this.$router.go(0)
+    },
+    showChangePassword () {
+      this.changePasswordVisible = true
     }
+  },
+  components: {
+    ChangePassword
   }
 }
 </script>

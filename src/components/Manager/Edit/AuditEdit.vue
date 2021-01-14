@@ -29,7 +29,8 @@ export default {
       default: false
     },
     auditor: Array,
-    allAuditor: Array
+    allAuditor: Array,
+    redBorder: Boolean
   },
   data () {
     let transferAllAuditor = []
@@ -53,6 +54,9 @@ export default {
   },
   methods: {
     close () {
+      if (this.newAuditor.length === 0) {
+        this.$emit('update:redBorder', true)
+      }
       this.$emit('update:visible', false)
     },
     updateAuditor () {
@@ -60,7 +64,6 @@ export default {
       this.newAuditor.forEach(index => {
         updateAuditor.push(this.allAuditor[index])
       })
-      console.log(updateAuditor)
       this.$emit('update:auditor', updateAuditor)
       this.close()
     }
