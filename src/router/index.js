@@ -7,7 +7,7 @@ import Batch from '../components/User/Batch'
 import Record from '../components/User/Record'
 import Audit from '../components/Manager/Audit'
 import Edit from '../components/Manager/Edit'
-import All from '../components/Manager/All'
+import Users from '../components/Manager/Users'
 
 Vue.use(Router)
 
@@ -77,9 +77,9 @@ export default new Router({
           }
         },
         {
-          path: '/all',
-          name: 'All',
-          component: All,
+          path: '/users',
+          name: Users,
+          component: Users,
           meta: {
             requireAuth: true,
             userType: 'admin'

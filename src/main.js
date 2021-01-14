@@ -45,7 +45,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requireAuth) {
     if (store.state.user !== null) {
       if (to.meta.userType === 'admin') {
-        if (store.state.user.isManager === true) {
+        if (store.state.user.isManager === 1) {
           next()
         } else {
           next({

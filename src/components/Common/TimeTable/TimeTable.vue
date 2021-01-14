@@ -14,7 +14,21 @@
         </div>
         <div id="table">
           <div class="t-row" v-for="(room, index) in timetable" :key="index">
-            <div class="room-info">{{ building.name }} {{ room.roomName }}</div>
+            <div class="room-info">
+              <el-popover
+                placement="top"
+                width="300"
+                trigger="hover">
+                <div class="room-img">
+                  <img :src="building.room[index].picture">
+                </div>
+                <div class="pop-info"><span class="pop-sub">地点：</span>{{ building.name }}{{room.roomName}}</div>
+                <div class="pop-info"><span class="pop-sub">容纳人数：</span>{{ building.room[index].capacity }}人</div>
+                <div class="pop-info"><span class="pop-sub">设备信息：</span>{{ building.room[index].explain }}</div>
+                <!-- 需要使用slot方法，不然显示不出来 -->
+                <span slot="reference">{{ building.name }} {{ room.roomName }}</span>
+              </el-popover>
+            </div>
             <table-cell
               v-for="(dayTimetable, index) in room.record"
               :key="index"
@@ -89,6 +103,8 @@ export default {
           date: curDate
         })
         .then(successResponse => {
+          console.log(this.building)
+          console.log(successResponse.data)
           this.timetable = successResponse.data
         })
         .catch(failResponse => {
@@ -178,7 +194,7 @@ export default {
   /*width: 99%;*/
   justify-content: center;
   align-content: center;
-  color: #4077FF;
+  color: #409EFF;
 }
 
 .switch-container {
@@ -196,5 +212,18 @@ export default {
   border-bottom: none;
   border-left: none;
   border-radius: unset;
+}
+
+.room-img > img {
+  width: 100%;
+}
+
+.pop-sub {
+  color: #99a9bf;
+}
+
+.pop-info {
+  height: 1.2rem;
+  line-height: 1.2rem;
 }
 </style>

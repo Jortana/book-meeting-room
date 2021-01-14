@@ -180,4 +180,9 @@ main >>> thead {
   color: #000;
   font-size: 1rem;
 }
+
+.record-table {
+  border-top: 1px solid #DCDFE6;
+  margin-top: 1rem;
+}
 </style>
