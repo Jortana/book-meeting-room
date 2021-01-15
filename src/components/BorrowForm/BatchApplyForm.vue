@@ -120,9 +120,9 @@
                   placeholder="选择起始时间"
                   v-model="applyForm.startTime"
                   :picker-options="{
-                    start: '08:00',
-                    step: '00:15',
-                    end: '21:45',
+                    start: '00:00',
+                    step: '00:30',
+                    end: '23:30',
                     maxTime: applyForm.endTime
                   }"
                 >
@@ -136,9 +136,9 @@
                   placeholder="选择结束时间"
                   v-model="applyForm.endTime"
                   :picker-options="{
-                    start: '08:15',
-                    step: '00:15',
-                    end: '22:00',
+                    start: '00:30',
+                    step: '00:30',
+                    end: '24:00',
                     minTime: applyForm.startTime
                   }"
                 >

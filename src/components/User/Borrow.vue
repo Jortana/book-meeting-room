@@ -45,7 +45,6 @@
 
 <script>
 import TimeTable from '../Common/TimeTable/TimeTable'
-// const imgUrl = 'http://223.2.48.121:8443/image/'
 export default {
   name: 'Borrow',
   mounted () {
@@ -79,7 +78,6 @@ export default {
     },
     saveBuildingAndRoom () {
       this.buildings = this.$store.state.buildings
-      console.log(this.buildings)
       this.curBuildingID = String(this.buildings[0].id)
     },
     changeBuilding (tab, event) {

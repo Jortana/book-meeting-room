@@ -76,9 +76,9 @@
                   placeholder="选择起始时间"
                   v-model="applyForm.startTime"
                   :picker-options="{
-                    start: '08:00',
-                    step: '00:15',
-                    end: '21:45',
+                    start: '00:00',
+                    step: '00:30',
+                    end: '23:30',
                     maxTime: applyForm.endTime
                   }">
                 </el-time-select>
@@ -91,9 +91,9 @@
                   placeholder="选择结束时间"
                   v-model="applyForm.endTime"
                   :picker-options="{
-                    start: '08:15',
-                    step: '00:15',
-                    end: '22:00',
+                    start: '00:30',
+                    step: '00:30',
+                    end: '24:00',
                     minTime: applyForm.startTime
                   }">
                 </el-time-select>
@@ -144,6 +144,8 @@ export default {
     console.log(this.roomInfo)
     return {
       isEdit: false,
+      orgStartTime: '',
+      orgEndTime: '',
       applyForm: {
         meetingName: '',
         userNum: this.$store.state.user.userNum,
@@ -198,6 +200,15 @@ export default {
   },
   methods: {
     close () {
+      if (this.applyForm.startTime === '' && this.roomInfo !== null) {
+        console.log(this.orgStartTime)
+        console.log('apply from')
+        console.log(this.applyForm)
+        console.log('room info')
+        console.log(this.roomInfo)
+        this.applyForm.startTime = this.orgStartTime
+        this.applyForm.endTime = this.orgEndTime
+      }
       this.$emit('update:visible', false)
       this.$emit('close')
     },
@@ -207,6 +218,8 @@ export default {
         this.isEdit = true
         this.applyForm = this.roomInfo['originInfo']
         this.applyForm.meetingType = this.meetingTypeOptionsArr[this.applyForm.meetingType]
+        this.orgStartTime = this.roomInfo.originInfo.startTime
+        this.orgEndTime = this.roomInfo.originInfo.endTime
       }
     },
     getAuditor () {
@@ -254,7 +267,6 @@ export default {
     },
     submit (data) {
       let url = this.isEdit ? '/updateRecord' : '/addRecord'
-      console.log(data)
       this.$axios
         .post(url, data)
         .then(successResponse => {

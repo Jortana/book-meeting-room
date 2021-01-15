@@ -44,7 +44,6 @@
         </template>
       </el-table-column>
     </el-table>
-<!--    <borrow-form v-if="editBorrowVisible" :visible.sync="editBorrowVisible" :borrowForm="curForm"></borrow-form>-->
     <apply-form v-if="editBorrowVisible" :visible.sync="editBorrowVisible" :roomInfo="roomInfo"></apply-form>
     <el-dialog
       title="确定取消"
@@ -86,7 +85,6 @@ export default {
         })
         .then(successResponse => {
           this.recordLoading = false
-          console.log(successResponse.data)
           successResponse.data.forEach((record) => {
             let { date, buildingName, roomName } = record
             let todayDate = new Date()
@@ -97,19 +95,16 @@ export default {
             record.room = buildingName + ' ' + roomName
             this.record.push(record)
           })
-          console.log(this.record)
         })
         .catch(() => {
         })
     },
     editBorrow (record) {
-      console.log(record)
       // 修改借教室的信息
       let building = {
         id: record.buildingID,
         name: record.buildingName
       }
-      console.log(building)
       this.roomInfo = {
         building: building,
         roomName: record.roomName,

@@ -45,7 +45,6 @@ export default {
     }
   },
   data () {
-    console.log(this.building)
     return {
       roomInfos: this.building.room,
       isAdding: false
@@ -54,8 +53,6 @@ export default {
   methods: {
     updateRoom (roomInfo, index) {
       let { explain, capacity, auditor, picture } = roomInfo
-      console.log(roomInfo)
-      console.log(index)
       this.roomInfos[index].explain = explain
       this.roomInfos[index].capacity = capacity
       this.roomInfos[index].auditor = auditor

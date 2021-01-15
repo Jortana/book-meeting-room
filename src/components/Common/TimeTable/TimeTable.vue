@@ -103,8 +103,6 @@ export default {
           date: curDate
         })
         .then(successResponse => {
-          console.log(this.building)
-          console.log(successResponse.data)
           this.timetable = successResponse.data
         })
         .catch(failResponse => {
@@ -207,7 +205,7 @@ export default {
 }
 
 .switch-btn {
-  margin: 0;
+  margin: 0 !important;
   border-top: none;
   border-bottom: none;
   border-left: none;

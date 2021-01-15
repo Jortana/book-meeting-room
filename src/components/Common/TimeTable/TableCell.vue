@@ -14,7 +14,7 @@
             <div class="time-content" v-else>等待审核 <i class="el-icon-warning"></i></div>
           </div>
         </el-scrollbar>
-        <transition name="el-zoom-in-bottom">
+        <transition name="el-zoom-in-bottom" v-if="this.$store.state.user.isManager !== 2">
           <div v-show="showApply" class="apply-btn-container transition-box">
             <el-button class="apply-btn"  type="success" plain @click="showNotificationDialog">申请</el-button>
           </div>

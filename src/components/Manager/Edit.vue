@@ -75,7 +75,6 @@ export default {
   },
   methods: {
     getAllRoom () {
-      console.log('get all room')
       this.buildingLoading = true
       // 获取所有的建筑和房间号
       this.$axios
@@ -90,7 +89,6 @@ export default {
     },
     saveBuildingAndRoom () {
       this.buildings = this.$store.state.buildings
-      console.log(this.buildings)
       if (this.curBuildingID === '0' || this.curBuildingID === '') {
         this.curBuildingID = String(this.buildings[0].id)
       }
@@ -101,7 +99,6 @@ export default {
           this.$axios
             .post('/addBuilding', this.addBuildingForm)
             .then(successResponse => {
-              console.log(successResponse.data)
               if (successResponse.data.success === true) {
                 this.$message({
                   showClose: true,

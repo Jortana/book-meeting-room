@@ -120,7 +120,6 @@ export default {
       this.$axios
         .get('/getAllUser')
         .then(successResponse => {
-          console.log(successResponse.data)
           this.users = successResponse.data
         })
         .catch(() => {
@@ -183,7 +182,6 @@ export default {
               isManager: this.addUserForm.userType
             })
             .then(successResponse => {
-              console.log(successResponse.data)
               if (successResponse.data === true) {
                 this.$message({
                   showClose: true,

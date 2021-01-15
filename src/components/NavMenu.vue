@@ -65,6 +65,10 @@ export default {
         { index: '/users', name: '用户管理' },
         { index: '/record', name: '我的记录' }
       ]
+    } else if (user.isManager === 2) {
+      navList = [
+        { index: '/borrow', name: '会议室预定申请' }
+      ]
     }
     return {
       navList: navList,

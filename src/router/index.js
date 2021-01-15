@@ -12,6 +12,7 @@ import Users from '../components/Manager/Users'
 Vue.use(Router)
 
 export default new Router({
+  base: '/borrow/',
   mode: 'history',
   routes: [
     {
@@ -36,7 +37,7 @@ export default new Router({
           component: Borrow,
           meta: {
             requireAuth: true,
-            userType: 'normal'
+            userType: 'all'
           }
         },
         {

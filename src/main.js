@@ -6,7 +6,7 @@ import router from './router'
 import store from './store'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import '../static/iconfont.css'
+
 // 自定义格式化日期
 import { formatDate } from './common/utils/FormatDate'
 // 滚动条插件
@@ -19,11 +19,11 @@ Vue.component('happy-scroll', HappyScroll)
 // 设置反向代理，前端请求默认发送到 http://后端服务器ip:8443/api
 const axios = require('axios')
 // 实验室
-axios.defaults.baseURL = 'http://223.2.54.77:8443/api'
+// axios.defaults.baseURL = 'http://223.2.54.77:8443/api'
 // 寝室
 // axios.defaults.baseURL = 'http://172.27.7.20:8443/api'
 // 部署
-// axios.defaults.baseURL = 'http://localhost:8443/api'
+axios.defaults.baseURL = 'http://222.192.6.51:8300/api'
 // 全局注册，之后可在其他组件中通过 this.$axios 发送数据
 Vue.prototype.$axios = axios
 
@@ -45,6 +45,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requireAuth) {
     if (store.state.user !== null) {
       if (to.meta.userType === 'admin') {
+        // 如果页面需要管理员权限
         if (store.state.user.isManager === 1) {
           next()
         } else {
@@ -52,7 +53,15 @@ router.beforeEach((to, from, next) => {
             path: 'borrow'
           })
         }
-      } else {
+      } else if (to.meta.userType === 'normal') {
+        if (store.state.user.isManager < 2) {
+          next()
+        } else {
+          next({
+            path: 'borrow'
+          })
+        }
+      } else if (to.meta.userType === 'all') {
         next()
       }
     } else {
