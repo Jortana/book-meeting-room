@@ -3,11 +3,11 @@ import Router from 'vue-router'
 import Login from '../components/Login'
 import Home from '../components/Home'
 import Borrow from '../components/User/Borrow'
-import Batch from '../components/User/Batch'
 import Record from '../components/User/Record'
 import Audit from '../components/Manager/Audit'
 import Edit from '../components/Manager/Edit'
 import Users from '../components/Manager/Users'
+import Message from '../components/Manager/Message'
 
 Vue.use(Router)
 
@@ -41,15 +41,6 @@ export default new Router({
           }
         },
         {
-          path: '/batch',
-          name: 'batch',
-          component: Batch,
-          meta: {
-            requireAuth: true,
-            userType: 'normal'
-          }
-        },
-        {
           path: '/record',
           name: 'Record',
           component: Record,
@@ -78,8 +69,17 @@ export default new Router({
           }
         },
         {
+          path: '/message',
+          name: 'Message',
+          component: Message,
+          meta: {
+            requireAuth: true,
+            userType: 'admin'
+          }
+        },
+        {
           path: '/users',
-          name: Users,
+          name: 'Users',
           component: Users,
           meta: {
             requireAuth: true,

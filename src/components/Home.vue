@@ -17,7 +17,7 @@ export default {
 
 <style scoped>
 #view {
-  width: 90%;
+  max-width: 1350px;
   margin: 0 auto;
 }
 

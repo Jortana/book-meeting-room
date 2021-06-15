@@ -6,7 +6,7 @@
       <div>可容纳人数</div>
       <div>管理员</div>
       <div>图片</div>
-      <div>操作</div>
+      <div class="lg-cell">操作</div>
     </div>
     <room-table-row
       class="row"
@@ -72,6 +72,7 @@ export default {
   border-left: 1px solid #DCDFE6;
   border-right: 1px solid #DCDFE6;
   /*border-bottom: 1px solid #DCDFE6;*/
+  /*overflow: scroll;*/
 }
 
 .row {
@@ -95,5 +96,28 @@ export default {
 .t-head > div{
   padding-top: 18px;
   padding-bottom: 18px;
+  min-width: 100px;
+}
+
+.wide-cell {
+  min-width: 150px !important;
+}
+
+.lg-cell {
+  min-width: 260px !important;
+}
+
+@media only screen and (max-width : 768px) {
+  .t-head div {
+    font-size: .9rem;
+  }
+
+  .room-table {
+    overflow: scroll;
+  }
+
+  .row {
+    font-size: .8rem;
+  }
 }
 </style>

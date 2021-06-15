@@ -12,11 +12,11 @@ module.exports = {
     proxyTable: {
       '/api': {
         // 实验室
-        // target: 'http://223.2.54.77:8443',
+        target: 'http://223.2.50.241:8300',
         // 寝室
         // target: 'http://172.27.7.20:8443',
         // 部署
-        target: 'http://222.192.6.51:8300',
+        // target: 'http://222.192.6.51:8300',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''

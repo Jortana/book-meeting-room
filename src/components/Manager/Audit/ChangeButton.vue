@@ -45,7 +45,6 @@ export default {
           state: this.state
         })
         .then(successResponse => {
-          console.log(successResponse.data)
           if (successResponse.data === true) {
             this.$message({
               showClose: true,

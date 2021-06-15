@@ -10,7 +10,7 @@
         <!-- 表头 -->
         <div class="t-head">
           <div>会议室</div>
-          <div v-for="(day, index) in week" :key="index"> 星期{{ weekZh[index] }} ({{ day | mdFormatDate }})</div>
+          <div v-for="(day, index) in week" :key="index"> 星期{{ weekZh[index] }} <br> {{ day | formatDate }}</div>
         </div>
         <div id="table">
           <div class="t-row" v-for="(room, index) in timetable" :key="index">
@@ -22,20 +22,22 @@
                 <div class="room-img">
                   <img :src="building.room[index].picture">
                 </div>
-                <div class="pop-info"><span class="pop-sub">地点：</span>{{ building.name }}{{room.roomName}}</div>
+                <div class="pop-info"><span class="pop-sub">地点：</span><span v-if="building.id !== 29">{{ building.name }}</span>{{room.roomName}}</div>
                 <div class="pop-info"><span class="pop-sub">容纳人数：</span>{{ building.room[index].capacity }}人</div>
                 <div class="pop-info"><span class="pop-sub">设备信息：</span>{{ building.room[index].explain }}</div>
                 <!-- 需要使用slot方法，不然显示不出来 -->
-                <span slot="reference">{{ building.name }} {{ room.roomName }}</span>
+                <span slot="reference"><span v-if="building.id !== 29">{{ building.name }}</span> {{ room.roomName }}</span>
               </el-popover>
             </div>
             <table-cell
-              v-for="(dayTimetable, index) in room.record"
-              :key="index"
+              v-for="(dayTimetable, recordIndex) in room.record"
+              :key="recordIndex"
               :dayTimetable="dayTimetable"
               :building="building"
               :roomName="room.roomName"
-              :date="week[index]"
+              :ban="building.room[index]['ban']"
+              :date="week[recordIndex]"
+              @refresh="getBusyTime"
             >
             </table-cell>
           </div>
@@ -61,6 +63,7 @@ export default {
     this.getBusyTime()
   },
   data () {
+    this.$emit('testEmit')
     let curDate = new Date()
     return {
       curDate: curDate,
@@ -142,17 +145,19 @@ export default {
 
 <style scoped>
 .t-head {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  display: flex;
   text-align: center;
   font-weight: bold;
   background-color: #F7FAF8;
 }
 
 .t-head > div {
+  display: flex;
+  flex: 1;
   padding-top: 18px;
   padding-bottom: 18px;
-  /*border-top: none;*/
+  justify-content: center;
+  align-items: center;
 }
 
 .t-head:first-child {
@@ -163,41 +168,35 @@ export default {
   border-left: 1px solid #D9E5DF;
 }
 
-#table {
-  display: grid;
-  /*height: 70vh;*/
-  width: 100%;
-  /*background-color: #3a8ee6;*/
-}
-
 .t-head > div, .t-row > div {
   border-right: 1px solid #D9E5DF;
   border-bottom: 1px solid #D9E5DF;
 }
 
 .t-row {
-  display: grid;
-  grid-template-columns: repeat(8, 12.5%);
+  display: flex;
   height: 20vh;
 }
 
-.t-row :nth-child(2) {
-  /* 解决稍微莫名其妙对不齐的bug */
-  /*width: 100%;*/
+.t-row div {
+  flex: 1;
 }
 
 .room-info {
-  display: grid;
+  display: flex;
   /* 解决稍微莫名其妙对不齐的bug */
   /*width: 99%;*/
   justify-content: center;
-  align-content: center;
+  align-items: center;
   color: #409EFF;
 }
 
 .switch-container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+}
+
+.switch-container button {
+  flex: 1;
 }
 
 .switch-container:first-child {
@@ -223,5 +222,16 @@ export default {
 .pop-info {
   height: 1.2rem;
   line-height: 1.2rem;
+}
+
+@media only screen and (max-width : 768px) {
+  #timetable {
+    overflow: scroll;
+  }
+
+  .t-head div,
+  .t-row div {
+    min-width: 100px;
+  }
 }
 </style>

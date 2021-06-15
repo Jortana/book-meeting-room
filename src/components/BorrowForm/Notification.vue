@@ -3,10 +3,10 @@
     <el-dialog
       title="教科院会场（会议室、教室）使用责任书"
       :visible.sync="visible"
-      width="50vw"
+      :width="width"
       center
       :before-close="close"
-      v-show="!applyFormVisible && !batchApplyFormVisible"
+      v-show="!applyFormVisible && !batchApplyFormVisible && !hallApplyFormVisible"
     >
       <div>
         <p>一、我承诺对会议场馆的使用安全负全责。</p>
@@ -27,18 +27,28 @@
       :visible.sync="applyFormVisible"
       :roomInfo="roomInfo"
       @close="close"
+      @refresh="$emit('refresh')"
     ></apply-form>
     <batch-apply-form
       v-if="batchApplyFormVisible"
       :visible.sync="batchApplyFormVisible"
       @close="close"
+      @refresh="$emit('refresh')"
     ></batch-apply-form>
+    <hall-apply-form
+      v-if="hallApplyFormVisible"
+      :visible.sync="hallApplyFormVisible"
+      :roomInfo="roomInfo"
+      @close="close"
+      @refresh="$emit('refresh')">
+    </hall-apply-form>
   </div>
 </template>
 
 <script>
 import ApplyForm from './ApplyForm'
 import BatchApplyForm from './BatchApplyForm'
+import HallApplyForm from './HallApplyForm'
 export default {
   name: 'Notification',
   props: {
@@ -57,10 +67,16 @@ export default {
       default: false
     }
   },
+  computed: {
+    width () {
+      return document.body.clientWidth > 375 ? '510px' : '90vw'
+    }
+  },
   data () {
     return {
       applyFormVisible: false,
-      batchApplyFormVisible: false
+      batchApplyFormVisible: false,
+      hallApplyFormVisible: false
     }
   },
   methods: {
@@ -68,12 +84,17 @@ export default {
       this.$emit('update:visible', false)
     },
     showApplyForm () {
-      this.isBatch ? this.batchApplyFormVisible = true : this.applyFormVisible = true
+      if (this.roomInfo !== null && this.roomInfo.building.id === 29) {
+        this.hallApplyFormVisible = true
+      } else {
+        this.isBatch ? this.batchApplyFormVisible = true : this.applyFormVisible = true
+      }
     }
   },
   components: {
     ApplyForm,
-    BatchApplyForm
+    BatchApplyForm,
+    HallApplyForm
   }
 }
 </script>
@@ -83,5 +104,9 @@ export default {
   position: absolute;
   left: 50%;
   top: 50%;
+}
+
+.notification-container >>> .el-dialog {
+  margin-top: 3rem !important;
 }
 </style>

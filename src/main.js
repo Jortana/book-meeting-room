@@ -16,14 +16,14 @@ import 'vue-happy-scroll/docs/happy-scroll.css'
 // 自定义组件名
 Vue.component('happy-scroll', HappyScroll)
 
-// 设置反向代理，前端请求默认发送到 http://后端服务器ip:8443/api
+// 设置反向代理，前端请求默认发送到 http://后端服务器ip:端口号/api
 const axios = require('axios')
 // 实验室
-// axios.defaults.baseURL = 'http://223.2.54.77:8443/api'
+axios.defaults.baseURL = 'http://223.2.50.241:8300/api'
 // 寝室
 // axios.defaults.baseURL = 'http://172.27.7.20:8443/api'
 // 部署
-axios.defaults.baseURL = 'http://222.192.6.51:8300/api'
+// axios.defaults.baseURL = 'http://222.192.6.51:8300/api'
 // 全局注册，之后可在其他组件中通过 this.$axios 发送数据
 Vue.prototype.$axios = axios
 
@@ -54,7 +54,7 @@ router.beforeEach((to, from, next) => {
           })
         }
       } else if (to.meta.userType === 'normal') {
-        if (store.state.user.isManager < 2) {
+        if (store.state.user.isManager < 3) {
           next()
         } else {
           next({

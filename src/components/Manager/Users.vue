@@ -1,7 +1,7 @@
 <template>
   <main>
     <h2>用户管理</h2>
-    <el-button type="primary" @click="addUserVisible = true">添加用户</el-button>
+    <el-button type="primary" size="medium" @click="addUserVisible = true">添加用户</el-button>
     <el-table
       :data="users"
       class="user-table">
@@ -14,6 +14,16 @@
         label="姓名">
       </el-table-column>
       <el-table-column
+        prop="departmentName"
+        label="部门"
+        :filters="departments"
+        :filter-method="filterDepartment"
+        filter-placement="bottom-end">
+        <template slot-scope="scope">
+          {{scope.row['departmentName']}}
+        </template>
+      </el-table-column>
+      <el-table-column
         label="用户类型">
         <template slot-scope="scope">
           <span v-if="scope.row.isManager === 1">管理员</span>
@@ -22,8 +32,8 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="操作"
-        width="150">
+        class="remove-label"
+        label="操作">
         <template slot-scope="scope">
           <el-button
             v-popover:removeConfirm
@@ -40,8 +50,9 @@
       title="确认删除"
       :visible.sync="confirmVisible"
       width="28%"
+      class="user-dialog-container"
       center>
-      <span>确认退出吗？</span>
+      <span>确认删除吗？</span>
       <span slot="footer" class="dialog-footer">
           <el-button @click="confirmVisible = false">取 消</el-button>
           <el-button type="primary" @click="removeUser">确 定</el-button>
@@ -52,6 +63,7 @@
       title="添加用户"
       :visible.sync="addUserVisible"
       width="28%"
+      class="user-dialog-container"
       center>
       <el-form
         class="password-form"
@@ -64,6 +76,12 @@
         </el-form-item>
         <el-form-item label="姓名" prop="username">
           <el-input v-model="addUserForm.username" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号码" prop="phone">
+          <el-input v-model="addUserForm.phone" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电子邮箱" prop="email">
+          <el-input v-model="addUserForm.email" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="用户类型" prop="userType">
           <el-select class="full-width" v-model="addUserForm.userType" placeholder="请选择用户类型">
@@ -89,10 +107,12 @@ export default {
   name: 'Users',
   created () {
     this.getAllUser()
+    this.getAllDepartment()
   },
   data () {
     return {
       users: [],
+      departments: [],
       confirmVisible: false,
       curUser: {},
       addUserVisible: false,
@@ -100,7 +120,8 @@ export default {
       userTypes: [
         { label: '普通用户', value: 0 },
         { label: '管理员', value: 1 },
-        { label: '物业管理人员', value: 2 }
+        { label: '学生', value: 2 },
+        { label: '物业管理人员', value: 3 }
       ],
       addUserRules: {
         userNum: [
@@ -111,16 +132,47 @@ export default {
         ],
         userType: [
           { required: true, message: '请选择用户类型', trigger: 'change' }
+        ],
+        phone: [
+          { required: true, message: '请填写用户手机号码', trigger: 'blur' },
+          { pattern: /^[1](([3][0-9])|([4][5-9])|([5][0-3,5-9])|([6][5,6])|([7][0-8])|([8][0-9])|([9][1,8,9]))[0-9]{8}$/, message: '请正确手机号码', trigger: 'blur' }
+        ],
+        email: [
+          { pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/, message: '请正确填写电子邮箱地址', trigger: 'blur' }
         ]
       }
     }
   },
   methods: {
+    getAllDepartment () {
+      this.$axios
+        .get('/queryDepartment')
+        .then(successResponse => {
+          let departments = []
+          for (let department of successResponse.data) {
+            departments.push({
+              text: department['departmentName'],
+              value: department['departmentName']
+            })
+          }
+          this.departments = departments
+        })
+        .catch(() => {
+          this.$message({
+            showClose: true,
+            message: '服务器出错',
+            type: 'error',
+            duration: 1500,
+            offset: 80
+          })
+        })
+    },
     getAllUser () {
       this.$axios
         .get('/getAllUser')
         .then(successResponse => {
           this.users = successResponse.data
+          console.log(this.users)
         })
         .catch(() => {
           this.$message({
@@ -179,7 +231,9 @@ export default {
             .post('/addUser', {
               userNum: this.addUserForm.userNum,
               username: this.addUserForm.username,
-              isManager: this.addUserForm.userType
+              isManager: this.addUserForm.userType,
+              phone: this.addUserForm.phone,
+              email: this.addUserForm.email
             })
             .then(successResponse => {
               if (successResponse.data === true) {
@@ -224,6 +278,9 @@ export default {
           return false
         }
       })
+    },
+    filterDepartment (value, row) {
+      return row['departmentName'] === value
     }
   }
 }
@@ -242,5 +299,29 @@ main >>> thead {
 
 .full-width {
   width: 100%;
+}
+
+@media only screen and (max-width : 768px) {
+  .user-dialog-container >>> .el-dialog {
+    width: 90% !important;
+  }
+
+  .user-dialog-container >>> .el-dialog__header {
+    padding-top: 3rem;
+  }
+
+  .user-dialog-container >>> .el-dialog__body {
+    padding-top: 0;
+  }
+}
+
+@media only screen and (max-width : 376px) {
+  .user-table >>> thead {
+    font-size: .9rem;
+  }
+
+  .user-table >>> td {
+    font-size: .8rem;
+  }
 }
 </style>

@@ -8,7 +8,8 @@
         <el-scrollbar wrap-class="list">
           <div class="time" v-for="(time, index) in dayTimetable" :key="index">
             <div class="time-content bold">{{ time.startTime }} - {{ time.endTime }}</div>
-            <div class="time-content">{{ time.reason }}</div>
+<!--            <div class="time-content">{{ time.reason }}</div>-->
+            <div class="time-content">{{ time['meetingType'] }}</div>
             <div class="time-content">{{ time['userName'] }}</div>
             <div class="time-content" v-if="time.state === 1">成功预定 <i class="el-icon-success"></i></div>
             <div class="time-content" v-else>等待审核 <i class="el-icon-warning"></i></div>
@@ -16,7 +17,8 @@
         </el-scrollbar>
         <transition name="el-zoom-in-bottom" v-if="this.$store.state.user.isManager !== 2">
           <div v-show="showApply" class="apply-btn-container transition-box">
-            <el-button class="apply-btn"  type="success" plain @click="showNotificationDialog">申请</el-button>
+            <el-button v-if="ban === 0" class="apply-btn" type="success" plain @click="showNotificationDialog">申请</el-button>
+            <el-button v-else class="apply-btn"  type="info" disabled plain>暂不可申请</el-button>
           </div>
         </transition>
     </div>
@@ -25,6 +27,7 @@
       v-if="showNotification"
       :visible.sync="showNotification"
       :roomInfo="roomInfo"
+      @refresh="$emit('refresh')"
     >
     </notification>
   </div>
@@ -53,6 +56,7 @@ export default {
         return ''
       }
     },
+    ban: Number,
     date: {
       type: Date,
       default () {

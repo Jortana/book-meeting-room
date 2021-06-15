@@ -1,12 +1,9 @@
 <template>
-  <main>
-    <h2>批量预定</h2>
-    <el-button type="primary" @click="notificationVisible = true">添加预定</el-button>
+  <div class="table-container">
     <el-table
       class="record-table"
       :data="batchRecord"
-      v-loading="recordLoading"
-    >
+      v-loading="recordLoading">
       <el-table-column
         label="教室">
         <template slot-scope="scope">
@@ -66,18 +63,7 @@
         <el-button type="primary" @click="cancelBorrow">确 定</el-button>
       </span>
     </el-dialog>
-    <notification
-      v-if="notificationVisible"
-      :visible.sync="notificationVisible"
-      :is-batch="true"
-    >
-    </notification>
-    <batch-apply-form
-      v-if="editFormVisible"
-      :visible.sync="editFormVisible"
-      :roomInfo="roomInfo"
-    ></batch-apply-form>
-  </main>
+  </div>
 </template>
 
 <script>
@@ -95,8 +81,6 @@ export default {
       weekZh: ['一', '二', '三', '四', '五', '六', '日'],
       confirmVisible: false,
       curRecord: {},
-      notificationVisible: false,
-      editFormVisible: false,
       roomInfo: {}
     }
   },
@@ -176,13 +160,13 @@ export default {
 </script>
 
 <style scoped>
-main >>> thead {
+.table-container >>> thead {
   color: #000;
   font-size: 1rem;
 }
 
-.record-table {
-  border-top: 1px solid #DCDFE6;
-  margin-top: 1rem;
-}
+/*.record-table {*/
+/*  border-top: 1px solid #DCDFE6;*/
+/*  margin-top: 1rem;*/
+/*}*/
 </style>

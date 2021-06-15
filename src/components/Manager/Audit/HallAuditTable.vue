@@ -16,53 +16,57 @@
               <el-form-item label="主持人">
                 <span>{{ props.row.hostName }}</span>
               </el-form-item>
+              <el-form-item label="联系电话">
+                <span>{{ props.row.phone }}</span>
+              </el-form-item>
               <el-form-item label="承办单位">
                 <span>{{ props.row.organizer }}</span>
               </el-form-item>
-              <el-form-item label="会议类型">
-                <span>{{ meetingTypeOptionsArr[props.row.meetingType] }}</span>
+              <el-form-item label="参会校领导">
+                <span>{{ props.row.leaderStr }}</span>
+              </el-form-item>
+              <el-form-item label="参加人">
+                <span>{{ props.row.participant }}</span>
+              </el-form-item>
+              <el-form-item label="提供服务">
+                <span>{{ props.row.provideStr }}</span>
               </el-form-item>
               <el-form-item label="会议人数">
                 <span>{{ props.row.meetingNumber }}人</span>
               </el-form-item>
-              <el-form-item label="会议内容">
+              <el-form-item label="主要用途">
                 <span>{{ props.row.meetingContent }}</span>
+              </el-form-item>
+              <el-form-item label="备注">
+                <span>{{ props.row.remarks.length === 0 ? '无' : props.row.remarks }}</span>
+              </el-form-item>
+              <el-form-item label="专项经费">
+                <span>{{ props.row.funds === true ? '是' : '否' }}</span>
               </el-form-item>
             </el-form>
           </template>
         </el-table-column>
         <el-table-column
-          :label="recordType === 'normal' ? '日期' : '起始日期'"
+          label="日期"
+          prop="date"
           min-width="100">
-          <template slot-scope="scope">
-            <div>{{ recordType === 'normal' ? scope.row.date : scope.row.startDate }}</div>
-          </template>
         </el-table-column>
         <el-table-column
-          v-if="recordType === 'batch'"
-          label="结束日期">
-          <template slot-scope="scope">
-            <div>{{ scope.row.endDate }}</div>
-          </template>
-        </el-table-column>
-        <el-table-column
-          v-if="recordType === 'batch'"
-          label="每周时间">
-          <template slot-scope="scope">
-            <div>星期{{ weekZh[scope.row.weekday - 1] }}</div>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="教室"
+          label="报告厅"
+          prop="roomName"
           min-width="90">
-          <template slot-scope="scope">
-            <div>{{ scope.row.buildingName }} {{ scope.row.roomName }}</div>
-          </template>
         </el-table-column>
         <el-table-column
           label="会议名称"
           prop="meetingName"
           min-width="90">
+        </el-table-column>
+        <el-table-column
+          label="会议类型"
+          min-width="90">
+          <template slot-scope="scope">
+            <div>{{ meetingTypeOptionsArr[scope.row.meetingType] }}</div>
+          </template>
         </el-table-column>
         <el-table-column
           label="开始时间"
@@ -79,17 +83,8 @@
           prop="username">
         </el-table-column>
         <el-table-column
-          label="审核状态"
-          v-if="curAuditType === '1'"
-          min-width="100">
-          <template slot-scope="scope">
-            <div v-if="scope.row.state === 1">预定成功 <i class="el-icon-success"></i></div>
-            <div v-else>预定失败 <i class="el-icon-error"></i></div>
-          </template>
-        </el-table-column>
-        <el-table-column
           label="操作"
-          :min-width="curAuditType === '0' ? operationMinWidth : 130">
+          :min-width="curAuditType === '0' ? operationMinWidth : 150">
           <template slot-scope="scope">
             <div v-if="curAuditType === '0'">
               <div v-if="scope.row.editable">
@@ -144,28 +139,13 @@
       </el-table>
     </div>
   </div>
-  <div class="pages">
-    <el-pagination
-      v-if="total > 0"
-      background
-      layout="prev, pager, next"
-      :total="total"
-      @current-change="getRecords">
-    </el-pagination>
-  </div>
 </div>
 </template>
 
 <script>
 import ChangeButton from './ChangeButton'
 export default {
-  name: 'AuditTable',
-  props: {
-    recordType: {
-      type: String,
-      default: ''
-    }
-  },
+  name: 'HallAuditTable',
   created () {
     this.getRecords(1)
   },
@@ -189,8 +169,6 @@ export default {
         this.screenWidth = val
         this.timer = true
         setTimeout(() => {
-          // 打印screenWidth变化的值
-          // console.log(this.screenWidth)
           this.timer = false
         }, 400)
       }
@@ -218,7 +196,7 @@ export default {
       unCurPage: 1,
       auCurPage: 1,
       recordLoading: false,
-      meetingTypeOptionsArr: ['上课', '会议', '报告'],
+      meetingTypeOptionsArr: ['上课', '会议', '报告', '开题', '答辩'],
       weekZh: ['一', '二', '三', '四', '五', '六', '日'],
       screenWidth: document.body.clientWidth,
       timer: false
@@ -228,7 +206,7 @@ export default {
     getRecords (page) {
       this.curAuditType === '0' ? this.unCurPage = page : this.auCurPage = page
       this.recordLoading = true
-      let url = this.recordType === 'normal' ? '/getRecByAuditor' : '/getMultiRecByAuditor'
+      let url = 'auditoriumByAuditor'
       this.$axios
         .post(url, {
           userNum: this.$store.state.user.userNum,
@@ -236,23 +214,19 @@ export default {
           state: this.curAuditType
         })
         .then(successResponse => {
-          // console.log(successResponse.data)
           let today = new Date().getTime()
           this.total = successResponse.data['recordNum']
           this.record = successResponse.data.record
-          if (this.recordType === 'normal') {
-            // 设置普通预定是否可修改
-            this.record.forEach((record) => {
-              let date = new Date(record.date).getTime()
-              record.editable = date > today
-            })
-          } else {
-            // 设置批量预定是否可修改
-            this.record.forEach((record) => {
-              let date = new Date(record.endDate).getTime()
-              record.editable = date > today
-            })
-          }
+          this.record.forEach((record) => {
+            // 设置是否可修改
+            let date = new Date(record.date).getTime()
+            record.editable = date > today
+            // 设置参会领导和提供服务的字符串
+            let leaders = record['leaderStr'].split(',')
+            let services = record['provideStr'].split(',')
+            record['leaderStr'] = leaders.slice(0, leaders.length - 1).join('，')
+            record['provideStr'] = services.slice(0, services.length - 1).join('，')
+          })
         })
         .catch(() => {
           this.$message({
@@ -306,16 +280,6 @@ export default {
   margin-right: 0;
   margin-bottom: 0;
   width: 20%;
-}
-
-.pages {
-  text-align: center;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
-.test >>> div {
-  margin: 0;
 }
 
 @media only screen and (max-width : 375px) {

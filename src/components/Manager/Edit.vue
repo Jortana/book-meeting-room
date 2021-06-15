@@ -34,6 +34,7 @@
       title="确认删除"
       :visible.sync="confirmVisible"
       width="28%"
+      class="notification-container"
       center>
       <span>确认删除吗？</span>
       <span slot="footer" class="dialog-footer">
@@ -194,5 +195,19 @@ export default {
 
 .add-building {
   margin-top: 1rem;
+}
+
+@media only screen and (max-width : 768px) {
+  .notification-container >>> .el-dialog {
+    width: 90% !important;
+  }
+
+  .notification-container >>> .el-dialog__header {
+    padding-top: 3rem;
+  }
+
+  .notification-container >>> .el-dialog__body {
+    padding-top: 0;
+  }
 }
 </style>

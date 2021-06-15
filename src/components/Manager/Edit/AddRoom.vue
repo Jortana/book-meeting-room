@@ -231,4 +231,25 @@ export default {
 .red-border {
   border-color: #F56C6C;
 }
+
+.input-cell .el-input {
+  max-width: 75%;
+}
+
+@media only screen and (max-width : 768px) {
+  .add-form >>> * {
+    font-size: .8rem;
+  }
+
+  .add-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .input-cell .el-button {
+    padding-left: .5rem;
+    padding-right: .5rem;
+  }
+}
 </style>

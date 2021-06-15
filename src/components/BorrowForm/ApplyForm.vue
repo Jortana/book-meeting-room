@@ -4,26 +4,26 @@
       title="教育科学学院会议室申请"
       class="apply-dialog"
       :visible.sync="visible"
-      width="50vw"
+      :width="width"
       center
       :before-close="close"
       :close-on-click-modal="false"
     >
       <div>
         <!-- 申请会议室的表单 -->
-        <el-form :model="applyForm" :rules="applyFormRules" ref="applyForm" label-width="80px">
+        <el-form :model="applyForm" :rules="applyFormRules" ref="applyForm" label-width="90px">
           <!-- 会议名称 -->
           <el-form-item label="会议名称" prop="meetingName">
             <el-input v-model="applyForm.meetingName"></el-input>
           </el-form-item>
           <!-- 申请人和主持人 -->
           <el-row>
-            <el-col :span="12">
+            <el-col :span="colNum">
               <el-form-item label="申请人" prop="userName">
                 <el-input v-model="userName" readonly></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="colNum">
               <el-form-item label="主持人" prop="hostName">
                 <el-input v-model="applyForm.hostName"></el-input>
               </el-form-item>
@@ -35,7 +35,7 @@
           </el-form-item>
           <!-- 会议类型和会议人数 -->
           <el-row>
-            <el-col :span="12">
+            <el-col :span="colNum">
               <el-form-item label="会议类型" prop="meetingType">
                 <el-select class="full-width" v-model="applyForm.meetingType" placeholder="请选择会议类型">
                   <el-option value="上课"></el-option>
@@ -44,7 +44,7 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="colNum">
               <el-form-item label="会议人数" prop="meetingNumber">
                 <el-input type="number" v-model="applyForm.meetingNumber"></el-input>
               </el-form-item>
@@ -56,12 +56,12 @@
           </el-form-item>
           <!-- 会议室和日期 -->
           <el-row>
-            <el-col :span="12">
+            <el-col :span="colNum">
               <el-form-item label="会议室">
                 <el-input :value="roomInfo.building.name + roomInfo.roomName" readonly></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="colNum">
               <el-form-item label="会议日期">
                 <el-input :value="roomInfo.date | formatDate" readonly></el-input>
               </el-form-item>
@@ -69,31 +69,31 @@
           </el-row>
           <!-- 会议时间 -->
           <el-row>
-            <el-col :span="12">
+            <el-col :span="colNum">
               <el-form-item label="起始时间" prop="startTime">
                 <el-time-select
                   class="full-width"
                   placeholder="选择起始时间"
                   v-model="applyForm.startTime"
                   :picker-options="{
-                    start: '00:00',
-                    step: '00:30',
-                    end: '23:30',
+                    start: '06:00',
+                    step: '00:05',
+                    end: '22:50',
                     maxTime: applyForm.endTime
                   }">
                 </el-time-select>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="colNum">
               <el-form-item label="结束时间" prop="endTime">
                 <el-time-select
                   class="full-width"
                   placeholder="选择结束时间"
                   v-model="applyForm.endTime"
                   :picker-options="{
-                    start: '00:30',
-                    step: '00:30',
-                    end: '24:00',
+                    start: '06:05',
+                    step: '00:05',
+                    end: '22:55',
                     minTime: applyForm.startTime
                   }">
                 </el-time-select>
@@ -101,7 +101,7 @@
             </el-col>
           </el-row>
           <!-- 审批人 -->
-          <el-form-item label="审批人" prop="auditor">
+          <el-form-item label="审批人" prop="auditor" v-if="auditors.length > 0">
             <el-select class="full-width" v-model="applyForm.auditor" placeholder="请选择审批人">
               <el-option
                 v-for="(auditor, index) in auditors"
@@ -140,8 +140,15 @@ export default {
     this.initApplyForm()
     this.getAuditor()
   },
+  computed: {
+    colNum () {
+      return document.body.clientWidth > 375 ? 12 : 24
+    },
+    width () {
+      return document.body.clientWidth > 375 ? '510px' : '90vw'
+    }
+  },
   data () {
-    console.log(this.roomInfo)
     return {
       isEdit: false,
       orgStartTime: '',
@@ -201,16 +208,12 @@ export default {
   methods: {
     close () {
       if (this.applyForm.startTime === '' && this.roomInfo !== null) {
-        console.log(this.orgStartTime)
-        console.log('apply from')
-        console.log(this.applyForm)
-        console.log('room info')
-        console.log(this.roomInfo)
         this.applyForm.startTime = this.orgStartTime
         this.applyForm.endTime = this.orgEndTime
       }
       this.$emit('update:visible', false)
       this.$emit('close')
+      this.$emit('refresh')
     },
     initApplyForm () {
       if (this.roomInfo['originInfo'] !== undefined) {
@@ -279,10 +282,7 @@ export default {
               duration: 1500,
               offset: 80
             })
-            setTimeout(() => {
-              this.close()
-              this.$router.go(0)
-            }, 300)
+            this.close()
           } else {
             // 时间段有重合
             this.$message({

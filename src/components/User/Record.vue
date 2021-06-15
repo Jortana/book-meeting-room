@@ -1,50 +1,65 @@
 <template>
   <main>
     <h2>我的记录</h2>
-    <el-table
-      class="record-table"
-      :data="record"
-      v-loading="recordLoading"
-    >
-      <el-table-column
-        prop="date"
-        label="日期">
-      </el-table-column>
-      <el-table-column
-        prop="room"
-        label="教室">
-      </el-table-column>
-      <el-table-column
-        prop="startTime"
-        label="起始时间">
-      </el-table-column>
-      <el-table-column
-        prop="endTime"
-        label="结束时间">
-      </el-table-column>
-      <el-table-column
-        label="审核状态">
-        <template slot-scope="scope">
-          <div v-if="scope.row.state === 0">等待审核 <i class="el-icon-warning"></i></div>
-          <div v-else-if="scope.row.state === 1">预定成功 <i class="el-icon-success"></i></div>
-          <div v-else>预定失败 <i class="el-icon-error"></i></div>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="操作"
-        width="180">
-        <template slot-scope="scope">
-          <div v-if="scope.row.editable">
-            <el-button @click="editBorrow(scope.row)" type="text" size="small">修改</el-button>
-            <el-button @click="showConfirm(scope.row)" type="text" size="small">取消申请</el-button>
-          </div>
-          <div v-else>
-            <el-button type="text" size="small" disabled>不可修改</el-button>
-          </div>
-        </template>
-      </el-table-column>
-    </el-table>
+    <el-tabs
+      class="type-tab"
+      v-model="curRecordType"
+      type="card">
+      <el-tab-pane label="普通预定" name="normal">
+        <el-table
+          class="record-table"
+          :data="record"
+          v-loading="recordLoading"
+          cell-class-name="t-cell"
+        >
+          <el-table-column
+            prop="date"
+            label="日期"
+            min-width="100">
+          </el-table-column>
+          <el-table-column
+            prop="room"
+            label="教室"
+            min-width="100">
+          </el-table-column>
+          <el-table-column
+            prop="startTime"
+            label="起始时间">
+          </el-table-column>
+          <el-table-column
+            prop="endTime"
+            label="结束时间">
+          </el-table-column>
+          <el-table-column
+            label="审核状态"
+            min-width="100">
+            <template slot-scope="scope">
+              <div v-if="scope.row.state === 0">等待审核 <i class="el-icon-warning"></i></div>
+              <div v-else-if="scope.row.state === 1">预定成功 <i class="el-icon-success"></i></div>
+              <div v-else>预定失败 <i class="el-icon-error"></i></div>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="操作"
+            min-width="110">
+            <template slot-scope="scope">
+              <div v-if="scope.row.editable">
+                <el-button @click="editBorrow(scope.row)" type="text" size="small">修改</el-button>
+                <el-button @click="showConfirm(scope.row)" type="text" size="small">取消申请</el-button>
+              </div>
+              <div v-else>
+                <el-button type="text" size="small" disabled>不可修改</el-button>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
+      <el-tab-pane label="批量预定" name="batch">
+        <batch class="record-table"></batch>
+      </el-tab-pane>
+    </el-tabs>
     <apply-form v-if="editBorrowVisible" :visible.sync="editBorrowVisible" :roomInfo="roomInfo"></apply-form>
+    <hall-apply-form v-if="editHallBorrowVisible" :visible.sync="editHallBorrowVisible" :roomInfo="roomInfo"></hall-apply-form>
     <el-dialog
       title="确定取消"
       :visible.sync="confirmVisible"
@@ -62,6 +77,8 @@
 
 <script>
 import ApplyForm from '../BorrowForm/ApplyForm'
+import HallApplyForm from '../BorrowForm/HallApplyForm'
+import Batch from './Batch'
 export default {
   name: 'Record',
   mounted () {
@@ -72,9 +89,11 @@ export default {
       record: [],
       recordLoading: true,
       editBorrowVisible: false,
+      editHallBorrowVisible: false,
       roomInfo: {},
       curForm: {},
-      confirmVisible: false
+      confirmVisible: false,
+      curRecordType: 'normal'
     }
   },
   methods: {
@@ -111,7 +130,11 @@ export default {
         date: record.date,
         originInfo: record
       }
-      this.editBorrowVisible = true
+      if (building.id === 29) {
+        this.editHallBorrowVisible = true
+      } else {
+        this.editBorrowVisible = true
+      }
     },
     showConfirm (record) {
       // 取消借教室
@@ -151,7 +174,9 @@ export default {
     }
   },
   components: {
-    ApplyForm
+    ApplyForm,
+    HallApplyForm,
+    Batch
   }
 }
 </script>
@@ -160,5 +185,24 @@ export default {
 main >>> thead {
   color: #000;
   font-size: 1rem;
+}
+
+.type-tab {
+  margin-right: 2rem;
+}
+
+.type-tab >>> .el-tabs__header {
+  margin-bottom: 0;
+}
+
+.record-table {
+  border-left: 1px solid #DCDFE6;
+  border-right: 1px solid #DCDFE6;
+}
+
+@media only screen and (max-width : 768px) {
+  main >>> thead {
+    font-size: .9rem;
+  }
 }
 </style>

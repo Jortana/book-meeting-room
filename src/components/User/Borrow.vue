@@ -20,31 +20,45 @@
     </div>
     -->
     <!-- 显示选择的一周教室的借用情况，默认为当前一周 -->
-    <!-- 切换楼宇 -->
-    <el-tabs
-      class="building-tab"
-      v-model="curBuildingID"
-      type="card"
-      @tab-click="changeBuilding"
-      v-loading="buildingLoading"
-    >
-      <el-tab-pane
-        :lazy="true"
-        v-for="(building, index) in buildings"
-        :key="index"
-        :label="building.name"
-        :name="String(building.id)">
-        <!-- 教室借用时间表 -->
-        <div class="timetable">
-          <time-table :building="building"></time-table>
-        </div>
-      </el-tab-pane>
-    </el-tabs>
+    <div class="panel-container">
+      <el-button class="batch-btn" type="primary" size="medium" @click="notificationVisible = true">批量预定</el-button>
+      <!-- 切换楼宇 -->
+      <el-tabs
+        class="building-tab"
+        v-model="curBuildingID"
+        type="card"
+        @tab-click="changeBuilding"
+        v-loading="buildingLoading"
+      >
+        <el-tab-pane
+          :lazy="true"
+          v-for="(building, index) in buildings"
+          :key="index"
+          :label="building.name"
+          :name="String(building.id)">
+          <!-- 教室借用时间表 -->
+          <div class="timetable">
+            <time-table :building="building"></time-table>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+    <notification
+      v-if="notificationVisible"
+      :visible.sync="notificationVisible"
+      :is-batch="true">
+    </notification>
+    <batch-apply-form
+      v-if="editFormVisible"
+      :visible.sync="editFormVisible"
+    ></batch-apply-form>
   </main>
 </template>
 
 <script>
 import TimeTable from '../Common/TimeTable/TimeTable'
+import Notification from '../BorrowForm/Notification'
+import BatchApplyForm from '../BorrowForm/BatchApplyForm'
 export default {
   name: 'Borrow',
   mounted () {
@@ -59,7 +73,9 @@ export default {
     return {
       buildings: [],
       curBuildingID: '',
-      buildingLoading: false
+      buildingLoading: false,
+      notificationVisible: false,
+      editFormVisible: false
     }
   },
   methods: {
@@ -86,7 +102,9 @@ export default {
     }
   },
   components: {
-    TimeTable
+    TimeTable,
+    Notification,
+    BatchApplyForm
   }
 }
 </script>
@@ -111,5 +129,22 @@ export default {
 .timetable {
   /*height: 130px;*/
   width: 100%;
+}
+
+.panel-container {
+  position: relative;
+}
+
+.batch-btn {
+  position: absolute;
+  right: 2rem;
+  top: 2px;
+  z-index: 10;
+}
+
+@media only screen and (max-width : 376px) {
+  .batch-btn {
+    top: -50px;
+  }
 }
 </style>

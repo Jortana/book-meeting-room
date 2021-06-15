@@ -28,13 +28,17 @@ export default {
   /*margin-top: 60px;*/
   /*width: 80%;*/
   margin: 0 auto;
-  height: 100vh;
+  /*height: 100vh;*/
 }
 
 body {
   margin: 0;
   height: 100vh;
   background-color: #397D58;
+}
+
+textarea {
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
 }
 
 #main-container {
@@ -73,9 +77,16 @@ main {
   padding-top: 0.1rem;
   padding-left: 1.6rem;
   overflow: hidden;
+  max-width: 1350px;
 }
 
 h2 {
   color: #666666;
+}
+
+@media only screen and (max-width : 376px) {
+  main {
+    margin-top: 0;
+  }
 }
 </style>

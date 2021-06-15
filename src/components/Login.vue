@@ -60,6 +60,7 @@ export default {
               password: password
             })
             .then(successResponse => {
+              // console.log('a')
               let data = successResponse.data.data
               if (data['isLogin'] === true) {
                 // 登录成功，进入borrow界面
@@ -187,5 +188,18 @@ form {
   width: 100%;
   padding-top: 10px;
   padding-bottom: 10px;
+}
+
+@media only screen and (max-width : 768px) {
+  #login {
+    margin: 0 2.5rem;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  #footer {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 }
 </style>

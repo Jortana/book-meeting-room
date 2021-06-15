@@ -21,9 +21,11 @@
           <img :src="curRoomInfo['picture']" :alt="curRoomInfo['picture'].split('/').pop()">
         </div>
       </el-popover>
-      <span v-popover:img>{{ curRoomInfo['picture'] !== null ? '点击查看图片' : '无' }}</span>
+      <span v-popover:img>{{ curRoomInfo['picture'] !== null ? '查看图片' : '无' }}</span>
     </div>
-    <div>
+    <div class="lg-cell">
+      <el-button size="mini" v-if="curRoomInfo['ban'] === 0" type="danger" plain @click="banRoom(1)">禁用</el-button>
+      <el-button size="mini" v-else type="success" plain @click="banRoom(0)">启用</el-button>
       <el-button size="mini" type="primary" plain @click="isEditing = true">修改信息</el-button>
       <el-button size="mini" type="danger" plain @click="confirmDeleteVisible = true">删除</el-button>
     </div>
@@ -32,6 +34,7 @@
       title="确认删除吗"
       :visible.sync="confirmDeleteVisible"
       width="30%"
+      class="notification-container"
       center>
       <span>确认删除吗？</span>
       <span slot="footer" class="dialog-footer">
@@ -314,6 +317,44 @@ export default {
       console.log(response)
       console.log(file)
       console.log(fileList)
+    },
+    banRoom (ban) {
+      this.$axios
+        .post('/ban', {
+          id: this.roomInfo.id,
+          ban: ban
+        })
+        .then(successResponse => {
+          if (successResponse.data === true) {
+            let roomInfo = this.roomInfo
+            roomInfo['ban'] = ban
+            this.$emit('updateRoom', roomInfo, this.index)
+            this.$message({
+              showClose: true,
+              message: '修改成功',
+              type: 'success',
+              duration: 1500,
+              offset: 80
+            })
+          } else {
+            this.$message({
+              showClose: true,
+              message: '修改失败，请联系管理员',
+              type: 'error',
+              duration: 1500,
+              offset: 80
+            })
+          }
+        })
+        .catch(() => {
+          this.$message({
+            showClose: true,
+            message: '服务器出错',
+            type: 'error',
+            duration: 1500,
+            offset: 80
+          })
+        })
     }
   },
   components: {
@@ -328,14 +369,15 @@ export default {
 }
 
 .cell {
+  display: flex;
+  /*flex-direction: column;*/
   justify-content: center;
-  align-content: center;
+  align-items: center;
 }
 
 .input-cell {
   margin: 0 auto;
   min-width: 130px;
-  width: 75%;
 }
 
 .input-cell >>> input {
@@ -354,5 +396,53 @@ export default {
 
 .img > img {
   width: 100%;
+}
+
+.wide-cell {
+  min-width: 150px !important;
+}
+
+.lg-cell {
+  min-width: 260px !important;
+}
+
+.edit-form {
+  display: flex;
+}
+
+.edit-form div {
+  flex: 1;
+}
+
+.row {
+  justify-content: center;
+  align-items: center;
+}
+
+.input-cell .el-input {
+  max-width: 75%;
+}
+
+.input-cell .el-button {
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+
+@media only screen and (max-width : 768px) {
+  .edit-form >>> * {
+    font-size: .8rem;
+  }
+
+  .notification-container >>> .el-dialog {
+    width: 90% !important;
+  }
+
+  .notification-container >>> .el-dialog__header {
+    padding-top: 3rem;
+  }
+
+  .notification-container >>> .el-dialog__body {
+    padding-top: 0;
+  }
 }
 </style>

@@ -11,11 +11,16 @@
         v-for="(recordType, index) in recordTypes"
         :key="index"
         :label="recordType.label"
-        :name="recordType.value"
-      >
+        :name="recordType.value">
         <div class="record-table">
           <audit-table :recordType="curRecordType"></audit-table>
         </div>
+      </el-tab-pane>
+      <el-tab-pane
+        :lazy="true"
+        label="报告厅"
+        name="hall">
+        <hall-audit-table></hall-audit-table>
       </el-tab-pane>
     </el-tabs>
   </main>
@@ -23,6 +28,7 @@
 
 <script>
 import AuditTable from './Audit/AuditTable'
+import HallAuditTable from './Audit/HallAuditTable'
 export default {
   name: 'Audit',
   data () {
@@ -43,7 +49,8 @@ export default {
   methods: {
   },
   components: {
-    AuditTable
+    AuditTable,
+    HallAuditTable
   }
 }
 </script>
