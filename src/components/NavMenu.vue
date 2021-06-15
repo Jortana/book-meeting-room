@@ -18,6 +18,7 @@
         <el-submenu index="user" id="user">
           <template slot="title"><span class="sub-title">{{ user.name }}</span></template>
           <el-menu-item class="sub-menu" @click="showChangePassword">修改密码</el-menu-item>
+          <el-menu-item class="sub-menu" @click="showChangePhone">修改号码</el-menu-item>
           <el-menu-item class="sub-menu" @click="showLogOut">退出</el-menu-item>
         </el-submenu>
       </el-menu>
@@ -34,7 +35,11 @@
             </div>
             <div class="hide-submenu border-top" @click="showChangePassword">
               <span>修改密码</span>
-            </div><div class="hide-submenu" @click="showLogOut">
+            </div>
+            <div class="hide-submenu" @click="showChangePhone">
+              <span>修改号码</span>
+            </div>
+            <div class="hide-submenu" @click="showLogOut">
               <span>退出</span>
             </div>
           </el-dialog>
@@ -56,6 +61,8 @@
         </el-dialog>
         <!-- 修改密码的dialog -->
         <change-password v-if="changePasswordVisible" :visible.sync="changePasswordVisible"></change-password>
+        <!-- 修改手机号码的dialog -->
+        <change-phone v-if="changePhoneVisible" :visible.sync="changePhoneVisible"></change-phone>
       </div>
     </div>
   </div>
@@ -63,6 +70,7 @@
 
 <script>
 import ChangePassword from './User/ChangePassword'
+import ChangePhone from './User/ChangePhone'
 export default {
   name: 'NavMenu',
   computed: {
@@ -97,6 +105,7 @@ export default {
       user: user,
       logOutVisible: false,
       changePasswordVisible: false,
+      changePhoneVisible: false,
       menuVisible: false
     }
   },
@@ -111,6 +120,9 @@ export default {
     showChangePassword () {
       this.changePasswordVisible = true
     },
+    showChangePhone () {
+      this.changePhoneVisible = true
+    },
     jumpTo (index) {
       this.menuVisible = false
       this.$router.push({
@@ -122,7 +134,8 @@ export default {
     }
   },
   components: {
-    ChangePassword
+    ChangePassword,
+    ChangePhone
   }
 }
 </script>
@@ -212,8 +225,9 @@ export default {
   .hide-submenu {
     color: #606266;
     font-size: 1.1rem;
-    height: 2rem;
-    line-height: 2em;
+    height: 2.5rem;
+    line-height: 2.5em;
+    cursor: pointer;
   }
 
   .border-top {

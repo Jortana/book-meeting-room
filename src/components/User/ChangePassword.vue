@@ -92,7 +92,6 @@ export default {
           this.$axios
             .post('/changePwd', data)
             .then(successResponse => {
-              console.log(successResponse.data)
               if (successResponse.data === true) {
                 this.$message({
                   showClose: true,

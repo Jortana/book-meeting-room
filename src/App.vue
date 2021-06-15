@@ -47,6 +47,10 @@ textarea {
   /*height: 100vh;*/
 }
 
+h2 {
+  font-weight: bold;
+}
+
 #footer {
   height: 10vh;
   padding-top: 2rem;
