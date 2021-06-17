@@ -168,9 +168,11 @@ export default {
       meetingTypeOptions: {
         '上课': 0,
         '会议': 1,
-        '报告': 2
+        '报告': 2,
+        '开题': 3,
+        '答辩': 4
       },
-      meetingTypeOptionsArr: ['上课', '会议', '报告'],
+      meetingTypeOptionsArr: ['上课', '会议', '报告', '开题', '答辩'],
       userName: this.$store.state.user.name,
       auditors: [],
       applyFormRules: {
@@ -220,7 +222,7 @@ export default {
         // 修改
         this.isEdit = true
         this.applyForm = this.roomInfo['originInfo']
-        this.applyForm.meetingType = this.meetingTypeOptionsArr[this.applyForm.meetingType]
+        this.applyForm.meetingType = this.meetingTypeOptionsArr[this.roomInfo.meetingType] || this.roomInfo.meetingType
         this.orgStartTime = this.roomInfo.originInfo.startTime
         this.orgEndTime = this.roomInfo.originInfo.endTime
       }

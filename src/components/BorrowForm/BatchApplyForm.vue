@@ -196,7 +196,7 @@ export default {
       }
     }
   },
-  created () {
+  mounted () {
     // 如果state为空就获取
     if (this.$store.state.buildings.length === 0) {
       this.getAllRoom()
@@ -246,9 +246,11 @@ export default {
       meetingTypeOptions: {
         '上课': 0,
         '会议': 1,
-        '报告': 2
+        '报告': 2,
+        '开题': 3,
+        '答辩': 4
       },
-      meetingTypeOptionsArr: ['上课', '会议', '报告'],
+      meetingTypeOptionsArr: ['上课', '会议', '报告', '开题', '答辩'],
       userName: this.$store.state.user.name,
       auditors: [],
       applyFormRules: {
@@ -327,7 +329,7 @@ export default {
         // 修改
         this.isEdit = true
         this.applyForm = this.roomInfo
-        this.applyForm.meetingType = this.meetingTypeOptionsArr[this.applyForm.meetingType]
+        this.applyForm.meetingType = this.meetingTypeOptionsArr[this.roomInfo.meetingType] || this.roomInfo.meetingType
         this.applyForm.date = []
         this.applyForm.date[0] = new Date(this.roomInfo.startDate)
         this.applyForm.date[1] = new Date(this.roomInfo.endDate)
@@ -362,7 +364,6 @@ export default {
       }
     },
     validateAndSubmit (formName) {
-      console.log(Object.assign({}, this.applyForm))
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let data = Object.assign({}, this.applyForm)

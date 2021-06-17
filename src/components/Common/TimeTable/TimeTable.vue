@@ -63,7 +63,6 @@ export default {
     this.getBusyTime()
   },
   data () {
-    this.$emit('testEmit')
     let curDate = new Date()
     return {
       curDate: curDate,

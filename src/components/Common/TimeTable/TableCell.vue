@@ -10,7 +10,7 @@
             <div class="time-content bold">{{ time.startTime }} - {{ time.endTime }}</div>
 <!--            <div class="time-content">{{ time.reason }}</div>-->
             <div class="time-content">{{ time['meetingName'] }}</div>
-            <div class="time-content">{{ time['userName'] }}</div>
+            <div class="time-content">{{ time['hostName'] }}</div>
             <div class="time-content" v-if="time.state === 1">成功预定 <i class="el-icon-success"></i></div>
             <div class="time-content" v-else>等待审核 <i class="el-icon-warning"></i></div>
           </div>

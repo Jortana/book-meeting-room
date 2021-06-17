@@ -106,10 +106,10 @@
               <el-option value="false" label="否"></el-option>
             </el-select>
           </el-form-item>
-          <!-- 会议室和日期，如果有roomInfo就显示，否则需要选择 -->
-          <el-row v-if="roomInfo !== null">
+          <!-- 会议室和日期，如果不是批量预定就显示，否则需要选择 -->
+          <el-row v-if="isBatch === false">
             <el-col :span="colNum">
-              <el-form-item label="会议室">
+              <el-form-item label="报告厅">
                 <el-input :value="roomInfo.roomName" readonly></el-input>
               </el-form-item>
             </el-col>
@@ -119,6 +119,52 @@
               </el-form-item>
             </el-col>
           </el-row>
+          <!-- 批量借用 -->
+          <div v-else>
+            <!-- 报告厅 -->
+            <el-form-item label="报告厅" prop="curHall" v-if="curRoomInfo !== null">
+              <el-select class="full-width" v-model="applyForm.curHall" placeholder="请选择">
+                <el-option
+                  v-for="(hall, index) in curRoomInfo[0].room"
+                  :key="index"
+                  :value="hall.roomName"
+                  :label="hall.roomName">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <!-- 日期 -->
+            <el-form-item prop="date" label="起止日期">
+              <el-date-picker
+                class="full-width"
+                v-model="applyForm.date"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="起始日期"
+                end-placeholder="结束日期"
+                value-format="yyyy-MM-dd">
+              </el-date-picker>
+            </el-form-item>
+            <!-- 每周几 -->
+            <el-form-item prop="weekday" label="借用天数">
+              <el-radio-group class="full-width week-radio" v-model="applyForm.weekday" v-if="false">
+                <el-radio-button
+                  v-for="(day, index) in weekZh"
+                  :key="index"
+                  :label="index + 1">
+                  每周{{ day }}
+                </el-radio-button>
+              </el-radio-group>
+              <el-select class="full-width" v-model="applyForm.weekday" placeholder="请选择" v-else>
+                <el-option label="每一天" value="0"></el-option>
+                <el-option
+                  v-for="(day, index) in weekZh"
+                  :key="index"
+                  :label="'每周' + day"
+                  :value="index + 1">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </div>
           <!-- 会议时间 -->
           <el-row>
             <el-col :span="colNum">
@@ -195,11 +241,16 @@ export default {
   mounted () {
     this.getLeaders()
     this.initApplyForm()
-    this.getAuditor()
+    if (this.roomInfo !== null) {
+      this.getAuditor()
+    }
   },
   watch: {
     allLeaders () {
       this.applyForm.leader = []
+    },
+    curHall () {
+      this.getAuditor()
     }
   },
   computed: {
@@ -208,11 +259,15 @@ export default {
     },
     width () {
       return document.body.clientWidth > 375 ? '510px' : '90vw'
+    },
+    curHall () {
+      return this.applyForm.curHall
     }
   },
   data () {
     return {
       isEdit: false,
+      curRoomInfo: null,
       orgStartTime: '',
       orgEndTime: '',
       applyForm: {
@@ -220,6 +275,7 @@ export default {
         userNum: this.$store.state.user.userNum,
         hostName: '',
         phone: '',
+        curHall: '',
         organizer: '',
         meetingType: '',
         meetingNumber: '',
@@ -229,6 +285,8 @@ export default {
         meetingContent: '',
         remarks: '',
         funds: '',
+        date: [],
+        weekday: null,
         startTime: '',
         endTime: '',
         auditor: ''
@@ -242,6 +300,7 @@ export default {
         '答辩': 4
       },
       meetingTypeOptionsArr: ['上课', '会议', '报告', '开题', '答辩'],
+      weekZh: ['一', '二', '三', '四', '五', '六', '日'],
       username: this.$store.state.user.name,
       leaders: [],
       auditors: [],
@@ -272,6 +331,15 @@ export default {
         funds: [
           { required: true, message: '请选择是否有专项经费支持', trigger: 'change' }
         ],
+        curHall: [
+          { required: true, message: '请选择报告厅', trigger: 'change' }
+        ],
+        date: [
+          { required: true, message: '请选择日期', trigger: 'change' }
+        ],
+        weekday: [
+          { required: true, message: '请选择借用天数', trigger: 'change' }
+        ],
         startTime: [
           { required: true, message: '请选择起始时间', trigger: 'blur' }
         ],
@@ -293,7 +361,20 @@ export default {
     initApplyForm () {
       // 如果没有传roomInfo，说明是要批量预定，这里获取所有报告厅的列表
       if (this.roomInfo === null) {
-        console.log('aa')
+        this.$axios
+          .get('/auditorium')
+          .then(response => {
+            this.curRoomInfo = response.data
+          })
+          .catch(() => {
+            this.$message({
+              showClose: true,
+              message: '服务器出错',
+              type: 'error',
+              duration: 1500,
+              offset: 80
+            })
+          })
       } else if (this.roomInfo['originInfo'] !== undefined) {
         // 修改
         this.isEdit = true
@@ -312,7 +393,7 @@ export default {
         originProvide.pop()
         originInfo['provide'] = originProvide
         this.applyForm = originInfo
-        this.applyForm.meetingType = this.meetingTypeOptionsArr[this.applyForm.meetingType]
+        this.applyForm.meetingType = this.meetingTypeOptionsArr[this.roomInfo.meetingType] || this.roomInfo.meetingType
         this.orgStartTime = this.roomInfo.originInfo.startTime
         this.orgEndTime = this.roomInfo.originInfo.endTime
       }
@@ -334,14 +415,16 @@ export default {
         })
     },
     getAuditor () {
+      let data = {}
       if (this.roomInfo === null) {
-        return
+        data.buildingID = this.curRoomInfo[0].id
+        data.roomName = this.curHall
+      } else {
+        data.buildingID = this.roomInfo.building.id
+        data.roomName = this.roomInfo.roomName
       }
       this.$axios
-        .post('/getAuditor', {
-          buildingID: this.roomInfo.building.id,
-          roomName: this.roomInfo.roomName
-        })
+        .post('/getAuditor', data)
         .then(successResponse => {
           this.auditors = successResponse.data
         })
@@ -357,11 +440,21 @@ export default {
     },
     validateAndSubmit (formName) {
       this.$refs[formName].validate((valid) => {
+        valid = true
         if (valid) {
           let data = Object.assign({}, this.applyForm)
-          data.buildingID = this.roomInfo.building.id
-          data.roomName = this.roomInfo.roomName
-          data.date = this.$options.filters['formatDate'](this.roomInfo.date)
+          if (this.roomInfo !== null) {
+            // 普通借用
+            data.buildingID = this.roomInfo.building.id
+            data.roomName = this.roomInfo.roomName
+            data.date = this.$options.filters['formatDate'](this.roomInfo.date)
+          } else {
+            // 批量借用
+            data.buildingID = this.curRoomInfo[0].id
+            data.roomName = this.curHall
+            data.startDate = this.$options.filters['formatDate'](data.date[0])
+            data.endDate = this.$options.filters['formatDate'](data.date[1])
+          }
           data.meetingType = this.meetingTypeOptions[data.meetingType]
           if (this.allLeaders) {
             data.leader = this.leaders
@@ -383,7 +476,12 @@ export default {
       })
     },
     submit (data) {
-      let url = this.isEdit ? '/updateRecord' : '/addRecord'
+      let url
+      if (this.isBatch) {
+        url = this.isEdit ? '/updateMultiRecord' : '/addMultiRecord'
+      } else {
+        url = this.isEdit ? '/updateRecord' : '/addRecord'
+      }
       this.$axios
         .post(url, data)
         .then(successResponse => {

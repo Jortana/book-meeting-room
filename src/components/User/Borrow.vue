@@ -21,14 +21,13 @@
         v-loading="buildingLoading"
       >
         <el-tab-pane
-          :lazy="true"
-          v-for="(building, index) in buildings"
-          :key="index"
+          v-for="building in buildings"
+          :key="String(building.id)"
           :label="building.name"
           :name="String(building.id)">
           <!-- 教室借用时间表 -->
           <div class="timetable">
-            <time-table :building="building"></time-table>
+            <time-table :ref="String(building.id) + 'timetable'" :building="building"></time-table>
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -90,7 +89,9 @@ export default {
     },
     changeBuilding (tab, event) {
       // 点击楼宇的选项卡切换当前楼宇
-      // console.log(tab, event)
+      const tabName = tab.name + 'timetable'
+      const component = this.$refs[tabName][0]
+      component.getBusyTime()
     },
     showNotification (type) {
       this.type = type

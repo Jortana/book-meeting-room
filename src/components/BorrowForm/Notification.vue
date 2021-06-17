@@ -79,7 +79,6 @@ export default {
     }
   },
   data () {
-    console.log(this.type)
     return {
       applyFormVisible: false,
       batchApplyFormVisible: false,
