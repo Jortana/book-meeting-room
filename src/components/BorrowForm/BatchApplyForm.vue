@@ -102,19 +102,21 @@
             </el-date-picker>
           </el-form-item>
           <!-- 每周几 -->
-          <el-form-item prop="weekday" label="每周时间">
-            <el-radio-group class="full-width week-radio" v-model="applyForm.weekday" v-if="colNum > 24">
+          <el-form-item prop="weekday" label="借用天数">
+            <el-radio-group class="full-width week-radio" v-model="applyForm.weekday" v-if="false">
               <el-radio-button
                 v-for="(day, index) in weekZh"
                 :key="index"
-                :label="index + 1"
-              >星期{{ day }}</el-radio-button>
+                :label="index + 1">
+                每周{{ day }}
+              </el-radio-button>
             </el-radio-group>
             <el-select class="full-width" v-model="applyForm.weekday" placeholder="请选择" v-else>
+              <el-option label="每一天" value="0"></el-option>
               <el-option
                 v-for="(day, index) in weekZh"
                 :key="index"
-                :label="'星期' + day"
+                :label="'每周' + day"
                 :value="index + 1">
               </el-option>
             </el-select>
@@ -278,6 +280,9 @@ export default {
         date: [
           { required: true, message: '请选择日期', trigger: 'change' }
         ],
+        weekday: [
+          { required: true, message: '请选择借用天数', trigger: 'change' }
+        ],
         startTime: [
           { required: true, message: '请选择起始时间', trigger: 'blur' }
         ],
@@ -309,7 +314,13 @@ export default {
       this.buildingLoading = false
     },
     saveBuildingAndRoom () {
-      this.buildings = this.$store.state.buildings
+      let buildings = [...this.$store.state.buildings]
+      buildings.forEach((building, index, buildings) => {
+        if (building.id === 29) {
+          buildings.splice(index, 1)
+        }
+      })
+      this.buildings = buildings
     },
     initApplyForm () {
       if (this.roomInfo !== null) {
@@ -351,6 +362,7 @@ export default {
       }
     },
     validateAndSubmit (formName) {
+      console.log(Object.assign({}, this.applyForm))
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let data = Object.assign({}, this.applyForm)
@@ -428,7 +440,7 @@ export default {
 }
 
 .full-width {
-  width: 100%;
+  width: 100% !important;
 }
 
 .week-radio {

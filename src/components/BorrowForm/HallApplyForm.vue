@@ -106,8 +106,8 @@
               <el-option value="false" label="否"></el-option>
             </el-select>
           </el-form-item>
-          <!-- 会议室和日期 -->
-          <el-row>
+          <!-- 会议室和日期，如果有roomInfo就显示，否则需要选择 -->
+          <el-row v-if="roomInfo !== null">
             <el-col :span="colNum">
               <el-form-item label="会议室">
                 <el-input :value="roomInfo.roomName" readonly></el-input>
@@ -186,6 +186,10 @@ export default {
       default () {
         return null
       }
+    },
+    isBatch: {
+      type: Boolean,
+      default: false
     }
   },
   mounted () {
@@ -287,7 +291,10 @@ export default {
       this.$emit('refresh')
     },
     initApplyForm () {
-      if (this.roomInfo['originInfo'] !== undefined) {
+      // 如果没有传roomInfo，说明是要批量预定，这里获取所有报告厅的列表
+      if (this.roomInfo === null) {
+        console.log('aa')
+      } else if (this.roomInfo['originInfo'] !== undefined) {
         // 修改
         this.isEdit = true
         let originInfo = this.roomInfo['originInfo']
@@ -327,6 +334,9 @@ export default {
         })
     },
     getAuditor () {
+      if (this.roomInfo === null) {
+        return
+      }
       this.$axios
         .post('/getAuditor', {
           buildingID: this.roomInfo.building.id,
@@ -424,7 +434,7 @@ export default {
 }
 
 .full-width {
-  width: 100%;
+  width: 100% !important;
 }
 
 .leaders-container {

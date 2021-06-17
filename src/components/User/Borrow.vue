@@ -1,27 +1,17 @@
 <template>
   <main>
     <h2>会议室预定申请</h2>
-    <!-- 搜索框 -->
-    <!--
-    <div class="search">
-      <el-form :inline="true">
-        <el-form-item>
-          <el-input
-            ref="searchInput"
-            placeholder="请输入会议室名称"
-            prefix-icon="el-icon-search"
-          >
-          </el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary">搜索</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
-    -->
     <!-- 显示选择的一周教室的借用情况，默认为当前一周 -->
     <div class="panel-container">
-      <el-button class="batch-btn" type="primary" size="medium" @click="notificationVisible = true">批量预定</el-button>
+      <el-dropdown trigger="click" class="batch-btn" @command="showNotification">
+        <el-button type="primary" size="medium">
+          批量预定 <i class="el-icon-arrow-down el-icon--right"></i>
+        </el-button>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item command="normal">会议室</el-dropdown-item>
+          <el-dropdown-item command="hall">报告厅</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
       <!-- 切换楼宇 -->
       <el-tabs
         class="building-tab"
@@ -46,12 +36,13 @@
     <notification
       v-if="notificationVisible"
       :visible.sync="notificationVisible"
-      :is-batch="true">
+      :is-batch="true"
+      :type="type">
     </notification>
-    <batch-apply-form
-      v-if="editFormVisible"
-      :visible.sync="editFormVisible"
-    ></batch-apply-form>
+<!--    <batch-apply-form-->
+<!--      v-if="editFormVisible"-->
+<!--      :visible.sync="editFormVisible"-->
+<!--    ></batch-apply-form>-->
   </main>
 </template>
 
@@ -75,7 +66,8 @@ export default {
       curBuildingID: '',
       buildingLoading: false,
       notificationVisible: false,
-      editFormVisible: false
+      editFormVisible: false,
+      type: ''
     }
   },
   methods: {
@@ -99,6 +91,10 @@ export default {
     changeBuilding (tab, event) {
       // 点击楼宇的选项卡切换当前楼宇
       // console.log(tab, event)
+    },
+    showNotification (type) {
+      this.type = type
+      this.notificationVisible = true
     }
   },
   components: {

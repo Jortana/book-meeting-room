@@ -320,6 +320,6 @@ export default {
 }
 
 .full-width {
-  width: 100%;
+  width: 100% !important;
 }
 </style>

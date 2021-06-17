@@ -9,7 +9,7 @@
           <div class="time" v-for="(time, index) in dayTimetable" :key="index">
             <div class="time-content bold">{{ time.startTime }} - {{ time.endTime }}</div>
 <!--            <div class="time-content">{{ time.reason }}</div>-->
-            <div class="time-content">{{ time['meetingType'] }}</div>
+            <div class="time-content">{{ time['meetingName'] }}</div>
             <div class="time-content">{{ time['userName'] }}</div>
             <div class="time-content" v-if="time.state === 1">成功预定 <i class="el-icon-success"></i></div>
             <div class="time-content" v-else>等待审核 <i class="el-icon-warning"></i></div>
@@ -27,6 +27,7 @@
       v-if="showNotification"
       :visible.sync="showNotification"
       :roomInfo="roomInfo"
+      :type="type"
       @refresh="$emit('refresh')"
     >
     </notification>
@@ -71,6 +72,9 @@ export default {
         roomName: this.roomName,
         date: this.date
       }
+    },
+    type () {
+      return this.building.id === 29 ? 'hall' : 'normal'
     }
   },
   data () {
@@ -128,7 +132,7 @@ export default {
 }
 
 .time-content {
-  margin-bottom: 0.1rem;
+  margin-bottom: 0.2rem;
 }
 
 .apply-btn-container {

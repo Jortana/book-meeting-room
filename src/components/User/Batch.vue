@@ -50,6 +50,7 @@
         </template>
       </el-table-column>
     </el-table>
+    <batch-apply-form v-if="editFormVisible" :visible.sync="editFormVisible" :roomInfo="roomInfo"></batch-apply-form>
     <!-- 取消预定确认窗口 -->
     <el-dialog
       title="确定取消"
@@ -81,7 +82,8 @@ export default {
       weekZh: ['一', '二', '三', '四', '五', '六', '日'],
       confirmVisible: false,
       curRecord: {},
-      roomInfo: {}
+      roomInfo: {},
+      editFormVisible: false
     }
   },
   methods: {

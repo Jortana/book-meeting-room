@@ -81,21 +81,21 @@ export default {
   data () {
     let user = this.$store.state.user
     let navList = []
-    if (user.isManager === 0) {
-      navList = [
-        { index: '/borrow', name: '预定申请' },
-        { index: '/record', name: '我的记录' }
-      ]
-    } else if (user.isManager === 1) {
+    if (user.isManager <= 1) {
       navList = [
         { index: '/borrow', name: '预定申请' },
         { index: '/audit', name: '预定审核' },
         { index: '/edit', name: '编辑教室' },
         { index: '/users', name: '用户管理' },
-        { index: '/message', name: '发送通知' },
-        { index: '/record', name: '我的记录' }
+        // { index: '/message', name: '发送通知' },
+        { index: '/record', name: '修改预定' }
       ]
     } else if (user.isManager === 2) {
+      navList = [
+        { index: '/borrow', name: '预定申请' },
+        { index: '/record', name: '修改预定' }
+      ]
+    } else {
       navList = [
         { index: '/borrow', name: '预定申请' }
       ]

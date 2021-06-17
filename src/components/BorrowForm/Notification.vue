@@ -39,6 +39,7 @@
       v-if="hallApplyFormVisible"
       :visible.sync="hallApplyFormVisible"
       :roomInfo="roomInfo"
+      :isBatch="isBatch"
       @close="close"
       @refresh="$emit('refresh')">
     </hall-apply-form>
@@ -65,6 +66,11 @@ export default {
     isBatch: {
       type: Boolean,
       default: false
+    },
+    // 用来判断是普通教室还是报告厅
+    type: {
+      type: String,
+      default: 'normal'
     }
   },
   computed: {
@@ -73,6 +79,7 @@ export default {
     }
   },
   data () {
+    console.log(this.type)
     return {
       applyFormVisible: false,
       batchApplyFormVisible: false,
@@ -84,7 +91,7 @@ export default {
       this.$emit('update:visible', false)
     },
     showApplyForm () {
-      if (this.roomInfo !== null && this.roomInfo.building.id === 29) {
+      if (this.type === 'hall') {
         this.hallApplyFormVisible = true
       } else {
         this.isBatch ? this.batchApplyFormVisible = true : this.applyFormVisible = true

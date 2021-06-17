@@ -46,7 +46,7 @@ router.beforeEach((to, from, next) => {
     if (store.state.user !== null) {
       if (to.meta.userType === 'admin') {
         // 如果页面需要管理员权限
-        if (store.state.user.isManager === 1) {
+        if (store.state.user.isManager <= 1) {
           next()
         } else {
           next({
