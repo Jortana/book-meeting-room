@@ -62,12 +62,15 @@
       <el-input size="medium" v-model.number="editForm.capacity"><span slot="suffix" class="sup">人</span></el-input>
     </el-form-item>
     <el-form-item prop="auditor" class="input-cell">
-      <el-button size="medium" plain @click="showAuditEdit">
+      <el-button v-if="editForm.auditor.length > 0" size="medium" plain @click="showAuditEdit">
         <span
           v-for="(auditor, index) in editForm.auditor"
           :key="index">
           <span v-if="index !== 0">，</span>{{ auditor.userName }}
         </span>
+      </el-button>
+      <el-button v-else size="medium" plain @click="showAuditEdit">
+        点击设置管理员
       </el-button>
     </el-form-item>
     <el-form-item prop="picture" class="input-cell img-cell">
@@ -193,7 +196,6 @@ export default {
       this.$axios
         .get('/getAllAuditor')
         .then(successResponse => {
-          console.log(successResponse.data)
           this.allAuditor = successResponse.data
         })
         .catch(() => {

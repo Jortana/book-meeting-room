@@ -21,7 +21,8 @@
       <el-table-column
         label="每周时间">
         <template slot-scope="scope">
-          <div>星期{{ weekZh[scope.row['weekday'] - 1] }}</div>
+          <div v-if="scope.row['weekday'] === 0">每天</div>
+          <div v-else>每周{{ weekZh[scope.row['weekday'] - 1] }}</div>
         </template>
       </el-table-column>
       <el-table-column
