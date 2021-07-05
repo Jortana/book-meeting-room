@@ -1,17 +1,22 @@
 <template>
   <div>
     <el-dialog
-      title="教育科学学院会议室申请"
-      class="apply-dialog"
       :visible.sync="visible"
       :width="width"
-      center
       :before-close="close"
       :close-on-click-modal="false"
+      title="教育科学学院会议室申请"
+      class="apply-dialog"
+      center
     >
       <div>
         <!-- 申请会议室的表单 -->
-        <el-form :model="applyForm" :rules="applyFormRules" ref="applyForm" label-width="90px">
+        <el-form
+          ref="applyForm"
+          :model="applyForm"
+          :rules="applyFormRules"
+          label-width="90px"
+        >
           <!-- 会议名称 -->
           <el-form-item label="会议名称" prop="meetingName">
             <el-input v-model="applyForm.meetingName"></el-input>
@@ -41,7 +46,11 @@
           <el-row>
             <el-col :span="colNum">
               <el-form-item label="会议类型" prop="meetingType">
-                <el-select class="full-width" v-model="applyForm.meetingType" placeholder="请选择会议类型">
+                <el-select
+                  v-model="applyForm.meetingType"
+                  class="full-width"
+                  placeholder="请选择会议类型"
+                >
                   <el-option value="上课"></el-option>
                   <el-option value="会议"></el-option>
                   <el-option value="报告"></el-option>
@@ -52,28 +61,32 @@
             </el-col>
             <el-col :span="colNum">
               <el-form-item label="参会人数" prop="meetingNumber">
-                <el-input type="number" v-model="applyForm.meetingNumber"></el-input>
+                <el-input
+                  v-model="applyForm.meetingNumber"
+                  type="number"
+                ></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <!-- 参会校领导 -->
           <el-form-item label="参会校领导" prop="leader">
             <div class="leaders-container">
-            <el-select
-              class="full-width"
-              :disabled="allLeaders"
-              v-model="applyForm.leader"
-              multiple
-              collapse-tags
-              :placeholder="allLeaders ? '全体领导' : '无'">
-              <el-option
-                v-for="(leader, index) in leaders"
-                :key="index"
-                :label="leader"
-                :value="leader">
-              </el-option>
-            </el-select>
-            <el-checkbox v-model="allLeaders">全体领导</el-checkbox>
+              <el-select
+                :disabled="allLeaders"
+                v-model="applyForm.leader"
+                :placeholder="allLeaders ? '全体领导' : '无'"
+                class="full-width"
+                multiple
+                collapse-tags
+              >
+                <el-option
+                  v-for="(leader, index) in leaders"
+                  :key="index"
+                  :label="leader"
+                  :value="leader"
+                ></el-option>
+              </el-select>
+              <el-checkbox v-model="allLeaders">全体领导</el-checkbox>
             </div>
           </el-form-item>
           <!-- 参加人 -->
@@ -83,25 +96,38 @@
           <!-- 提供服务 -->
           <el-form-item label="提供服务" prop="provide">
             <el-select
-              class="full-width"
               v-model="applyForm.provide"
+              class="full-width"
               multiple
-              placeholder="无">
+              placeholder="无"
+            >
               <el-option label="茶水服务" value="茶水服务"></el-option>
               <el-option label="音响话筒服务" value="音响话筒服务"></el-option>
             </el-select>
           </el-form-item>
           <!-- 主要用途 -->
           <el-form-item label="主要用途" prop="meetingContent">
-            <el-input type="textarea" v-model="applyForm.meetingContent" :autosize="{ minRows: 2 }"></el-input>
+            <el-input
+              v-model="applyForm.meetingContent"
+              :autosize="{ minRows: 2 }"
+              type="textarea"
+            ></el-input>
           </el-form-item>
           <!-- 备注 -->
           <el-form-item label="备注" prop="remarks">
-            <el-input type="textarea" v-model="applyForm.remarks" :autosize="{ minRows: 2 }"></el-input>
+            <el-input
+              v-model="applyForm.remarks"
+              :autosize="{ minRows: 2 }"
+              type="textarea"
+            ></el-input>
           </el-form-item>
           <!-- 是否有专项经费支持 -->
           <el-form-item label="专项经费" prop="funds">
-            <el-select class="full-width" v-model="applyForm.funds" placeholder="请选择">
+            <el-select
+              v-model="applyForm.funds"
+              class="full-width"
+              placeholder="请选择"
+            >
               <el-option value="true" label="是"></el-option>
               <el-option value="false" label="否"></el-option>
             </el-select>
@@ -115,53 +141,74 @@
             </el-col>
             <el-col :span="colNum">
               <el-form-item label="会议日期">
-                <el-input :value="roomInfo.date | formatDate" readonly></el-input>
+                <el-input
+                  :value="roomInfo.date | formatDate"
+                  readonly
+                ></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <!-- 批量借用 -->
           <div v-else>
             <!-- 报告厅 -->
-            <el-form-item label="报告厅" prop="curHall" v-if="curRoomInfo !== null">
-              <el-select class="full-width" v-model="applyForm.curHall" placeholder="请选择">
+            <el-form-item
+              v-if="curRoomInfo !== null"
+              label="报告厅"
+              prop="curHall"
+            >
+              <el-select
+                v-model="applyForm.curHall"
+                class="full-width"
+                placeholder="请选择"
+              >
                 <el-option
                   v-for="(hall, index) in curRoomInfo[0].room"
                   :key="index"
                   :value="hall.roomName"
-                  :label="hall.roomName">
-                </el-option>
+                  :label="hall.roomName"
+                ></el-option>
               </el-select>
             </el-form-item>
             <!-- 日期 -->
             <el-form-item prop="date" label="起止日期">
               <el-date-picker
-                class="full-width"
                 v-model="applyForm.date"
+                class="full-width"
                 type="daterange"
                 range-separator="至"
                 start-placeholder="起始日期"
                 end-placeholder="结束日期"
-                value-format="yyyy-MM-dd">
-              </el-date-picker>
+                value-format="yyyy-MM-dd"
+              ></el-date-picker>
             </el-form-item>
             <!-- 每周几 -->
             <el-form-item prop="weekday" label="借用天数">
-              <el-radio-group class="full-width week-radio" v-model="applyForm.weekday" v-if="false">
+              <el-radio-group
+                v-if="false"
+                v-model="applyForm.weekday"
+                class="full-width week-radio"
+              >
                 <el-radio-button
                   v-for="(day, index) in weekZh"
                   :key="index"
-                  :label="index + 1">
+                  :label="index + 1"
+                >
                   每周{{ day }}
                 </el-radio-button>
               </el-radio-group>
-              <el-select class="full-width" v-model="applyForm.weekday" placeholder="请选择" v-else>
+              <el-select
+                v-else
+                v-model="applyForm.weekday"
+                class="full-width"
+                placeholder="请选择"
+              >
                 <el-option label="每一天" value="0"></el-option>
                 <el-option
                   v-for="(day, index) in weekZh"
                   :key="index"
                   :label="'每周' + day"
-                  :value="index + 1">
-                </el-option>
+                  :value="index + 1"
+                ></el-option>
               </el-select>
             </el-form-item>
           </div>
@@ -170,37 +217,45 @@
             <el-col :span="colNum">
               <el-form-item label="起始时间" prop="startTime">
                 <el-time-select
-                  class="full-width"
-                  placeholder="选择起始时间"
                   v-model="applyForm.startTime"
                   :picker-options="{
                     start: '06:00',
                     step: '00:05',
                     end: '22:50',
                     maxTime: applyForm.endTime
-                  }">
-                </el-time-select>
+                  }"
+                  class="full-width"
+                  placeholder="选择起始时间"
+                ></el-time-select>
               </el-form-item>
             </el-col>
             <el-col :span="colNum">
               <el-form-item label="结束时间" prop="endTime">
                 <el-time-select
-                  class="full-width"
-                  placeholder="选择结束时间"
                   v-model="applyForm.endTime"
                   :picker-options="{
                     start: '06:05',
                     step: '00:05',
                     end: '22:55',
                     minTime: applyForm.startTime
-                  }">
-                </el-time-select>
+                  }"
+                  class="full-width"
+                  placeholder="选择结束时间"
+                ></el-time-select>
               </el-form-item>
             </el-col>
           </el-row>
           <!-- 审批人 -->
-          <el-form-item label="审批人" prop="auditor" v-if="auditors.length > 0">
-            <el-select class="full-width" v-model="applyForm.auditor" placeholder="请选择审批人">
+          <el-form-item
+            v-if="auditors.length > 0"
+            label="审批人"
+            prop="auditor"
+          >
+            <el-select
+              v-model="applyForm.auditor"
+              class="full-width"
+              placeholder="请选择审批人"
+            >
               <el-option
                 v-for="(auditor, index) in auditors"
                 :key="index"
@@ -213,7 +268,9 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="close">取 消</el-button>
-        <el-button type="primary" @click="validateAndSubmit('applyForm')">申 请</el-button>
+        <el-button type="primary" @click="validateAndSubmit('applyForm')">
+          申 请
+        </el-button>
       </span>
     </el-dialog>
   </div>
@@ -229,7 +286,7 @@ export default {
     },
     roomInfo: {
       type: Object,
-      default () {
+      default() {
         return null
       }
     },
@@ -238,33 +295,7 @@ export default {
       default: false
     }
   },
-  mounted () {
-    this.getLeaders()
-    this.initApplyForm()
-    if (this.roomInfo !== null) {
-      this.getAuditor()
-    }
-  },
-  watch: {
-    allLeaders () {
-      this.applyForm.leader = []
-    },
-    curHall () {
-      this.getAuditor()
-    }
-  },
-  computed: {
-    colNum () {
-      return document.body.clientWidth > 375 ? 12 : 24
-    },
-    width () {
-      return document.body.clientWidth > 375 ? '510px' : '90vw'
-    },
-    curHall () {
-      return this.applyForm.curHall
-    }
-  },
-  data () {
+  data() {
     return {
       isEdit: false,
       curRoomInfo: null,
@@ -293,11 +324,11 @@ export default {
       },
       allLeaders: false,
       meetingTypeOptions: {
-        '上课': 0,
-        '会议': 1,
-        '报告': 2,
-        '开题': 3,
-        '答辩': 4
+        上课: 0,
+        会议: 1,
+        报告: 2,
+        开题: 3,
+        答辩: 4
       },
       meetingTypeOptionsArr: ['上课', '会议', '报告', '开题', '答辩'],
       weekZh: ['一', '二', '三', '四', '五', '六', '日'],
@@ -313,7 +344,11 @@ export default {
         ],
         phone: [
           { required: true, message: '请输入联系电话', trigger: 'blur' },
-          { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
+          {
+            pattern: /^1[3456789]\d{9}$/,
+            message: '请输入正确的手机号码',
+            trigger: 'blur'
+          }
         ],
         organizer: [
           { required: true, message: '请输入承办单位', trigger: 'blur' }
@@ -323,20 +358,26 @@ export default {
         ],
         meetingNumber: [
           { required: true, message: '请输入会议人数', trigger: 'blur' },
-          { pattern: /^[0-9]+$/, message: '人数需要是大于0的数字', trigger: 'blur' }
+          {
+            pattern: /^[0-9]+$/,
+            message: '人数需要是大于0的数字',
+            trigger: 'blur'
+          }
         ],
         meetingContent: [
           { required: true, message: '请输入主要内容', trigger: 'blur' }
         ],
         funds: [
-          { required: true, message: '请选择是否有专项经费支持', trigger: 'change' }
+          {
+            required: true,
+            message: '请选择是否有专项经费支持',
+            trigger: 'change'
+          }
         ],
         curHall: [
           { required: true, message: '请选择报告厅', trigger: 'change' }
         ],
-        date: [
-          { required: true, message: '请选择日期', trigger: 'change' }
-        ],
+        date: [{ required: true, message: '请选择日期', trigger: 'change' }],
         weekday: [
           { required: true, message: '请选择借用天数', trigger: 'change' }
         ],
@@ -352,18 +393,44 @@ export default {
       }
     }
   },
+  computed: {
+    colNum() {
+      return document.body.clientWidth > 375 ? 12 : 24
+    },
+    width() {
+      return document.body.clientWidth > 375 ? '510px' : '90vw'
+    },
+    curHall() {
+      return this.applyForm.curHall
+    }
+  },
+  watch: {
+    allLeaders() {
+      this.applyForm.leader = []
+    },
+    curHall() {
+      this.getAuditor()
+    }
+  },
+  mounted() {
+    this.getLeaders()
+    this.initApplyForm()
+    if (this.roomInfo !== null) {
+      this.getAuditor()
+    }
+  },
   methods: {
-    close () {
+    close() {
       this.$emit('update:visible', false)
       this.$emit('close')
       this.$emit('refresh')
     },
-    initApplyForm () {
+    initApplyForm() {
       // 如果没有传roomInfo，说明是要批量预定，这里获取所有报告厅的列表
       if (this.roomInfo === null) {
         this.$axios
           .get('/auditorium')
-          .then(response => {
+          .then((response) => {
             this.curRoomInfo = response.data
           })
           .catch(() => {
@@ -378,10 +445,10 @@ export default {
       } else if (this.roomInfo['originInfo'] !== undefined) {
         // 修改
         this.isEdit = true
-        let originInfo = this.roomInfo['originInfo']
+        const originInfo = this.roomInfo['originInfo']
         originInfo['funds'] = String(originInfo['funds'])
         // 校领导数组
-        let originLeaders = originInfo['leaderStr'].split(',')
+        const originLeaders = originInfo['leaderStr'].split(',')
         if (originLeaders.length === this.leaders.length) {
           this.allLeaders = true
         } else {
@@ -389,19 +456,21 @@ export default {
           originInfo['leader'].pop()
         }
         // 提供服务
-        let originProvide = originInfo['provideStr'].split(',')
+        const originProvide = originInfo['provideStr'].split(',')
         originProvide.pop()
         originInfo['provide'] = originProvide
         this.applyForm = originInfo
-        this.applyForm.meetingType = this.meetingTypeOptionsArr[this.roomInfo.meetingType] || this.roomInfo.meetingType
+        this.applyForm.meetingType =
+          this.meetingTypeOptionsArr[this.roomInfo.meetingType] ||
+          this.roomInfo.meetingType
         this.orgStartTime = this.roomInfo.originInfo.startTime
         this.orgEndTime = this.roomInfo.originInfo.endTime
       }
     },
-    getLeaders () {
+    getLeaders() {
       this.$axios
         .get('/leader')
-        .then(successResponse => {
+        .then((successResponse) => {
           this.leaders = successResponse.data
         })
         .catch(() => {
@@ -414,8 +483,8 @@ export default {
           })
         })
     },
-    getAuditor () {
-      let data = {}
+    getAuditor() {
+      const data = {}
       if (this.roomInfo === null) {
         data.buildingID = this.curRoomInfo[0].id
         data.roomName = this.curHall
@@ -425,7 +494,7 @@ export default {
       }
       this.$axios
         .post('/getAuditor', data)
-        .then(successResponse => {
+        .then((successResponse) => {
           this.auditors = successResponse.data
         })
         .catch(() => {
@@ -438,11 +507,11 @@ export default {
           })
         })
     },
-    validateAndSubmit (formName) {
+    validateAndSubmit(formName) {
       this.$refs[formName].validate((valid) => {
         valid = true
         if (valid) {
-          let data = Object.assign({}, this.applyForm)
+          const data = Object.assign({}, this.applyForm)
           if (this.roomInfo !== null) {
             // 普通借用
             data.buildingID = this.roomInfo.building.id
@@ -475,7 +544,7 @@ export default {
         }
       })
     },
-    submit (data) {
+    submit(data) {
       let url
       if (this.isBatch) {
         url = this.isEdit ? '/updateMultiRecord' : '/addMultiRecord'
@@ -484,7 +553,7 @@ export default {
       }
       this.$axios
         .post(url, data)
-        .then(successResponse => {
+        .then((successResponse) => {
           if (successResponse.data === true) {
             // 申请成功
             this.$message({

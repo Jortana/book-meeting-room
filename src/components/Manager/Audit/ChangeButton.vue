@@ -1,5 +1,7 @@
 <template>
-  <el-button size="mini" :type="type" :loading="loading" @click="changeState">{{ content }}</el-button>
+  <el-button :type="type" :loading="loading" size="mini" @click="changeState">
+    {{ content }}
+  </el-button>
 </template>
 
 <script>
@@ -16,7 +18,7 @@ export default {
     },
     record: {
       type: Object,
-      default () {
+      default() {
         return null
       }
     },
@@ -29,22 +31,25 @@ export default {
       default: 0
     }
   },
-  data () {
+  data() {
     return {
       loading: false
     }
   },
   methods: {
-    changeState () {
-      let record = this.record
+    changeState() {
+      const record = this.record
       this.loading = true
-      let url = record.date !== undefined ? '/changeRecordState' : '/changeMultiRecState'
+      const url =
+        record.date !== undefined
+          ? '/changeRecordState'
+          : '/changeMultiRecState'
       this.$axios
         .post(url, {
           ID: record.id,
           state: this.state
         })
-        .then(successResponse => {
+        .then((successResponse) => {
           if (successResponse.data === true) {
             this.$message({
               showClose: true,
@@ -81,6 +86,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

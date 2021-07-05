@@ -2,45 +2,59 @@
   <main>
     <h2>编辑楼宇和教室</h2>
     <el-tabs
-      class="building-tab"
-      v-model="curBuildingID"
-      type="card"
       v-loading="buildingLoading"
+      v-model="curBuildingID"
+      class="building-tab"
+      type="card"
       @tab-remove="showConfirm"
     >
       <el-tab-pane
-        :lazy="true"
         v-for="(building, index) in buildings"
+        :lazy="true"
         :key="index"
         :label="building.name"
         :name="String(building.id)"
-        closable>
+        closable
+      >
         <!-- 教室列表 -->
-        <room-table :building.sync="building" @getNewRoomInfo="getAllRoom"></room-table>
+        <room-table
+          :building.sync="building"
+          @getNewRoomInfo="getAllRoom"
+        ></room-table>
       </el-tab-pane>
       <!-- 添加楼宇的panel和表单 -->
       <el-tab-pane name="add">
         <span slot="label"><i class="el-icon-circle-plus"></i></span>
-        <el-form class="add-building" :model="addBuildingForm" :rules="addBuildingRules" ref="ruleForm" :inline="true" label-width="100px">
+        <el-form
+          ref="ruleForm"
+          :model="addBuildingForm"
+          :rules="addBuildingRules"
+          :inline="true"
+          class="add-building"
+          label-width="100px"
+        >
           <el-form-item label="建筑名称" prop="buildingName">
             <el-input v-model="addBuildingForm.buildingName"></el-input>
           </el-form-item>
-          <el-button type="primary" @click="addBuilding('ruleForm')">添加建筑</el-button>
+          <el-button type="primary" @click="addBuilding('ruleForm')">
+            添加建筑
+          </el-button>
         </el-form>
       </el-tab-pane>
     </el-tabs>
     <!-- 确认删除建筑的dialog -->
     <el-dialog
-      title="确认删除"
       :visible.sync="confirmVisible"
+      title="确认删除"
       width="28%"
       class="notification-container"
-      center>
+      center
+    >
       <span>确认删除吗？</span>
       <span slot="footer" class="dialog-footer">
-          <el-button @click="confirmVisible = false">取 消</el-button>
-          <el-button type="primary" @click="removeBuilding">确 定</el-button>
-        </span>
+        <el-button @click="confirmVisible = false">取 消</el-button>
+        <el-button type="primary" @click="removeBuilding">确 定</el-button>
+      </span>
     </el-dialog>
   </main>
 </template>
@@ -49,15 +63,10 @@
 import RoomTable from './Edit/RoomTable'
 export default {
   name: 'Edit',
-  created () {
-    // 如果state为空就获取
-    if (this.$store.state.buildings.length === 0) {
-      this.getAllRoom()
-    } else {
-      this.saveBuildingAndRoom()
-    }
+  components: {
+    RoomTable
   },
-  data () {
+  data() {
     return {
       buildings: [],
       buildingLoading: false,
@@ -74,32 +83,39 @@ export default {
       confirmVisible: false
     }
   },
+  created() {
+    // 如果state为空就获取
+    if (this.$store.state.buildings.length === 0) {
+      this.getAllRoom()
+    } else {
+      this.saveBuildingAndRoom()
+    }
+  },
   methods: {
-    getAllRoom () {
+    getAllRoom() {
       this.buildingLoading = true
       // 获取所有的建筑和房间号
       this.$axios
         .get('/getAllRoom')
-        .then(successResponse => {
+        .then((successResponse) => {
           this.$store.commit('saveBuildings', successResponse.data)
           this.saveBuildingAndRoom()
         })
-        .catch(() => {
-        })
+        .catch(() => {})
       this.buildingLoading = false
     },
-    saveBuildingAndRoom () {
+    saveBuildingAndRoom() {
       this.buildings = this.$store.state.buildings
       if (this.curBuildingID === '0' || this.curBuildingID === '') {
         this.curBuildingID = String(this.buildings[0].id)
       }
     },
-    addBuilding (formName) {
+    addBuilding(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$axios
             .post('/addBuilding', this.addBuildingForm)
-            .then(successResponse => {
+            .then((successResponse) => {
               if (successResponse.data.success === true) {
                 this.$message({
                   showClose: true,
@@ -141,16 +157,16 @@ export default {
         }
       })
     },
-    showConfirm (buildingID) {
+    showConfirm(buildingID) {
       this.removeBuildingID = buildingID
       this.confirmVisible = true
     },
-    removeBuilding () {
+    removeBuilding() {
       this.$axios
         .post('/delBuilding', {
           buildingID: this.removeBuildingID
         })
-        .then(successResponse => {
+        .then((successResponse) => {
           if (successResponse.data === true) {
             this.$router.go(0)
           } else {
@@ -173,9 +189,6 @@ export default {
           })
         })
     }
-  },
-  components: {
-    RoomTable
   }
 }
 </script>
@@ -190,14 +203,14 @@ export default {
 }
 
 .el-icon-circle-plus {
-  color: #409EFF;
+  color: #409eff;
 }
 
 .add-building {
   margin-top: 1rem;
 }
 
-@media only screen and (max-width : 768px) {
+@media only screen and (max-width: 768px) {
   .notification-container >>> .el-dialog {
     width: 90% !important;
   }

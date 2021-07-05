@@ -6,23 +6,23 @@
         <el-cascader-panel
           v-model="selectedUsers"
           :options="users"
-          :props="{ multiple: true }">
-        </el-cascader-panel>
+          :props="{ multiple: true }"
+        ></el-cascader-panel>
       </div>
       <div class="message-container">
         <el-input
+          v-model="message"
           type="textarea"
           placeholder="请输入信息内容"
-          v-model="message">
-        </el-input>
+        ></el-input>
       </div>
-<!--      {{ selectedUsers }}-->
+      <!--      {{ selectedUsers }}-->
     </div>
     <div class="send-button">
       <el-button
+        :loading="sendLoading"
         type="primary"
         size="medium"
-        :loading="sendLoading"
         @click="sendMessage"
       >
         <span v-if="sendLoading === false">发送</span>
@@ -35,10 +35,7 @@
 <script>
 export default {
   name: 'Message',
-  mounted () {
-    this.getAllUser()
-  },
-  data () {
+  data() {
     return {
       users: [],
       selectedUsers: [],
@@ -46,19 +43,22 @@ export default {
       sendLoading: false
     }
   },
+  mounted() {
+    this.getAllUser()
+  },
   methods: {
-    getAllUser () {
+    getAllUser() {
       this.$axios({
         method: 'GET',
         url: '/getByDepartment'
       })
-        .then(response => {
-          let users = response.data.map(users => {
+        .then((response) => {
+          const users = response.data.map((users) => {
             // console.log(users)
             return {
               value: users['departmentID'],
               label: users['departmentName'],
-              children: users['userList'].map(user => {
+              children: users['userList'].map((user) => {
                 return {
                   value: user['userNum'],
                   label: user['username']
@@ -78,7 +78,7 @@ export default {
           })
         })
     },
-    sendMessage () {
+    sendMessage() {
       if (this.selectedUsers.length === 0) {
         this.$message({
           showClose: true,
@@ -99,8 +99,8 @@ export default {
         return
       }
       this.sendLoading = true
-      let selectedUsers = []
-      for (let users of this.selectedUsers) {
+      const selectedUsers = []
+      for (const users of this.selectedUsers) {
         selectedUsers.push(users[1])
       }
       this.$axios({
@@ -111,7 +111,7 @@ export default {
           user: selectedUsers
         }
       })
-        .then(response => {
+        .then((response) => {
           console.log(response)
           if (response.data.result > 0) {
             this.$message({
@@ -144,7 +144,7 @@ export default {
           this.sendLoading = false
         })
     },
-    clearInfo () {
+    clearInfo() {
       this.message = ''
       this.selectedUsers = []
     }
@@ -153,63 +153,57 @@ export default {
 </script>
 
 <style scoped>
-  .main-container {
-    display: flex;
+.main-container {
+  display: flex;
+}
+
+.message-container {
+  margin-left: 1.2rem;
+  margin-right: 1.6rem;
+  width: 100%;
+}
+
+.message-container >>> .el-textarea,
+.message-container >>> textarea {
+  height: 100%;
+}
+
+.send-button {
+  margin-top: 1rem;
+  text-align: right;
+  margin-right: 1.6rem;
+}
+
+@media only screen and (max-width: 376px) {
+  main {
+    padding-left: 10px;
+    padding-right: 10px;
   }
 
   .select-container {
-    /*width: 380px;*/
+    width: 350px;
     /*min-width: 380px;*/
     /*max-width: 380px;*/
   }
 
-  .message-container {
-    margin-left: 1.2rem;
-    margin-right: 1.6rem;
-    width: 100%;
+  .select-container >>> .el-cascader-panel {
+    width: 315px;
   }
 
-  .message-container >>> .el-textarea,
-  .message-container >>> textarea {
-    height: 100%;
+  .main-container {
+    flex-direction: column;
+  }
+
+  .message-container {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 1rem;
+    width: 100%;
+    height: 200px;
   }
 
   .send-button {
-    margin-top: 1rem;
-    text-align: right;
-    margin-right: 1.6rem;
+    margin-right: 0;
   }
-
-  @media only screen and (max-width : 376px) {
-    main {
-      padding-left: 10px;
-      padding-right: 10px;
-    }
-
-    .select-container {
-      width: 350px;
-      /*min-width: 380px;*/
-      /*max-width: 380px;*/
-    }
-
-    .select-container >>> .el-cascader-panel {
-      width: 315px;
-    }
-
-    .main-container {
-      flex-direction: column;
-    }
-
-    .message-container {
-      margin-left: 0;
-      margin-right: 0;
-      margin-top: 1rem;
-      width: 100%;
-      height: 200px;
-    }
-
-    .send-button {
-      margin-right: 0;
-    }
-  }
+}
 </style>

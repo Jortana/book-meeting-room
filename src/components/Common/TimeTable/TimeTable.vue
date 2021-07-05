@@ -1,69 +1,87 @@
 <template>
-    <div>
-      <!-- 切换按钮 -->
-      <div class="switch-container">
-        <el-button class="switch-btn" type="info" plain @click="changeWeek(-1)">上一周</el-button>
-        <el-button class="switch-btn" type="info" plain @click="changeWeek(0)">本周</el-button>
-        <el-button class="switch-btn" type="info" plain @click="changeWeek(1)">下一周</el-button>
-      </div>
-      <div id="timetable" v-loading="timetableLoading">
-        <!-- 表头 -->
-        <div class="t-head">
-          <div>会议室</div>
-          <div v-for="(day, index) in week" :key="index"> 星期{{ weekZh[index] }} <br> {{ day | formatDate }}</div>
+  <div>
+    <!-- 切换按钮 -->
+    <div class="switch-container">
+      <el-button class="switch-btn" type="info" plain @click="changeWeek(-1)">
+        上一周
+      </el-button>
+      <el-button class="switch-btn" type="info" plain @click="changeWeek(0)">
+        本周
+      </el-button>
+      <el-button class="switch-btn" type="info" plain @click="changeWeek(1)">
+        下一周
+      </el-button>
+    </div>
+    <div v-loading="timetableLoading" id="timetable">
+      <!-- 表头 -->
+      <div class="t-head">
+        <div>会议室</div>
+        <div v-for="(day, index) in week" :key="index">
+          星期{{ weekZh[index] }}
+          <br />
+          {{ day | formatDate }}
         </div>
-        <div id="table">
-          <div class="t-row" v-for="(room, index) in timetable" :key="index">
-            <div class="room-info">
-              <el-popover
-                placement="top"
-                width="300"
-                trigger="hover">
-                <div class="room-img">
-                  <img :src="building.room[index].picture">
-                </div>
-                <div class="pop-info"><span class="pop-sub">地点：</span><span v-if="building.id !== 29">{{ building.name }}</span>{{room.roomName}}</div>
-                <div class="pop-info"><span class="pop-sub">容纳人数：</span>{{ building.room[index].capacity }}人</div>
-                <div class="pop-info"><span class="pop-sub">设备信息：</span>{{ building.room[index].explain }}</div>
-                <!-- 需要使用slot方法，不然显示不出来 -->
-                <span slot="reference"><span v-if="building.id !== 29">{{ building.name }}</span> {{ room.roomName }}</span>
-              </el-popover>
-            </div>
-            <table-cell
-              v-for="(dayTimetable, recordIndex) in room.record"
-              :key="recordIndex"
-              :dayTimetable="dayTimetable"
-              :building="building"
-              :roomName="room.roomName"
-              :ban="building.room[index]['ban']"
-              :date="week[recordIndex]"
-              @refresh="getBusyTime"
-            >
-            </table-cell>
+      </div>
+      <div id="table">
+        <div v-for="(room, index) in timetable" :key="index" class="t-row">
+          <div class="room-info">
+            <el-popover placement="top" width="300" trigger="hover">
+              <div class="room-img">
+                <img :src="building.room[index].picture" />
+              </div>
+              <div class="pop-info">
+                <span class="pop-sub">地点：</span>
+                <span v-if="building.id !== 29">{{ building.name }}</span>
+                {{ room.roomName }}
+              </div>
+              <div class="pop-info">
+                <span class="pop-sub">容纳人数：</span>
+                {{ building.room[index].capacity }}人
+              </div>
+              <div class="pop-info">
+                <span class="pop-sub">设备信息：</span>
+                {{ building.room[index].explain }}
+              </div>
+              <!-- 需要使用slot方法，不然显示不出来 -->
+              <span slot="reference">
+                <span v-if="building.id !== 29">{{ building.name }}</span>
+                {{ room.roomName }}
+              </span>
+            </el-popover>
           </div>
+          <table-cell
+            v-for="(dayTimetable, recordIndex) in room.record"
+            :key="recordIndex"
+            :dayTimetable="dayTimetable"
+            :building="building"
+            :roomName="room.roomName"
+            :ban="building.room[index]['ban']"
+            :date="week[recordIndex]"
+            @refresh="getBusyTime"
+          ></table-cell>
         </div>
       </div>
     </div>
+  </div>
 </template>
 
 <script>
 import TableCell from './TableCell'
 export default {
   name: 'TimeTable',
+  components: {
+    TableCell
+  },
   props: {
     building: {
       type: Object,
-      default () {
+      default() {
         return null
       }
     }
   },
-  created () {
-    this.setDays()
-    this.getBusyTime()
-  },
-  data () {
-    let curDate = new Date()
+  data() {
+    const curDate = new Date()
     return {
       curDate: curDate,
       week: [],
@@ -72,42 +90,46 @@ export default {
       timetableLoading: false
     }
   },
+  created() {
+    this.setDays()
+    this.getBusyTime()
+  },
   methods: {
     // 设置表头的星期和日期
-    setDays () {
-      let date = this.curDate
+    setDays() {
+      const date = this.curDate
       // 年份
-      let year = date.getFullYear()
+      const year = date.getFullYear()
       // 月份
-      let month = date.getMonth()
+      const month = date.getMonth()
       // 日
-      let day = date.getDate()
+      const day = date.getDate()
       // 一周中的第几天
-      let dayOfWeek = date.getDay()
+      const dayOfWeek = date.getDay()
       // 当前周的开始日期，从周一开始
-      let weekStartDate = new Date(year, month, day - dayOfWeek + 1)
+      const weekStartDate = new Date(year, month, day - dayOfWeek + 1)
       // 当前周的结束日期
       // let weekEndDate = new Date(year, month, day + (6 - dayOfWeek))
       this.week = []
       for (let i = 0; i < 7; i++) {
-        let curDay = new Date(weekStartDate)
+        const curDay = new Date(weekStartDate)
         curDay.setDate(curDay.getDate() + i)
         this.week.push(curDay)
       }
     },
     // 根据buildingID和当前日期取得各个房间的借用情况
-    getBusyTime () {
+    getBusyTime() {
       this.timetableLoading = true
-      let curDate = this.$options.filters['formatDate'](this.curDate)
+      const curDate = this.$options.filters['formatDate'](this.curDate)
       this.$axios
         .post('getRecordByDate', {
           buildingID: this.building.id,
           date: curDate
         })
-        .then(successResponse => {
+        .then((successResponse) => {
           this.timetable = successResponse.data
         })
-        .catch(failResponse => {
+        .catch(() => {
           this.$message({
             showClose: true,
             message: '服务器出错',
@@ -119,7 +141,7 @@ export default {
       this.timetableLoading = false
     },
     // 改变当前想看的周
-    changeWeek (week) {
+    changeWeek(week) {
       switch (week) {
         case -1:
           this.curDate.setDate(this.curDate.getDate() - 7)
@@ -135,9 +157,6 @@ export default {
       this.setDays()
       this.getBusyTime()
     }
-  },
-  components: {
-    TableCell
   }
 }
 </script>
@@ -147,7 +166,7 @@ export default {
   display: flex;
   text-align: center;
   font-weight: bold;
-  background-color: #F7FAF8;
+  background-color: #f7faf8;
 }
 
 .t-head > div {
@@ -160,16 +179,18 @@ export default {
 }
 
 .t-head:first-child {
-  border-top: 1px solid #D9E5DF;
+  border-top: 1px solid #d9e5df;
 }
 
-.t-head:first-child,  .room-info{
-  border-left: 1px solid #D9E5DF;
+.t-head:first-child,
+.room-info {
+  border-left: 1px solid #d9e5df;
 }
 
-.t-head > div, .t-row > div {
-  border-right: 1px solid #D9E5DF;
-  border-bottom: 1px solid #D9E5DF;
+.t-head > div,
+.t-row > div {
+  border-right: 1px solid #d9e5df;
+  border-bottom: 1px solid #d9e5df;
 }
 
 .t-row {
@@ -187,7 +208,7 @@ export default {
   /*width: 99%;*/
   justify-content: center;
   align-items: center;
-  color: #409EFF;
+  color: #409eff;
 }
 
 .switch-container {
@@ -223,7 +244,7 @@ export default {
   line-height: 1.2rem;
 }
 
-@media only screen and (max-width : 768px) {
+@media only screen and (max-width: 768px) {
   #timetable {
     overflow: scroll;
   }

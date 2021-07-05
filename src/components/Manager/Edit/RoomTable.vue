@@ -9,25 +9,32 @@
       <div class="lg-cell">操作</div>
     </div>
     <room-table-row
-      class="row"
       v-for="(roomInfo, index) in roomInfos"
       :key="index"
       :index="index"
       :roomInfo.sync="roomInfo"
+      class="row"
       @updateRoom="updateRoom"
     ></room-table-row>
     <!-- 添加教室行 -->
-    <div class="row" v-if="isAdding===false">
+    <div v-if="isAdding === false" class="row">
       <div></div>
       <div></div>
       <div></div>
       <div></div>
       <div></div>
       <div>
-        <el-button size="mini" type="primary" @click="isAdding=true">添加教室</el-button>
+        <el-button size="mini" type="primary" @click="isAdding = true">
+          添加教室
+        </el-button>
       </div>
     </div>
-    <add-room v-else class="row" :isAdding.sync="isAdding" :buildingID="building.id"></add-room>
+    <add-room
+      v-else
+      :isAdding.sync="isAdding"
+      :buildingID="building.id"
+      class="row"
+    ></add-room>
   </div>
 </template>
 
@@ -36,32 +43,33 @@ import RoomTableRow from './RoomTableRow'
 import AddRoom from './AddRoom'
 export default {
   name: 'RoomTable',
+  components: {
+    RoomTableRow,
+    AddRoom
+  },
   props: {
     building: {
       type: Object,
-      default () {
+      default() {
         return null
       }
     }
   },
-  data () {
+  data() {
     return {
       roomInfos: this.building.room,
       isAdding: false
     }
   },
   methods: {
-    updateRoom (roomInfo, index) {
-      let { explain, capacity, auditor, picture } = roomInfo
+    updateRoom(roomInfo, index) {
+      const { explain, capacity, auditor, picture } = roomInfo
       this.roomInfos[index].explain = explain
       this.roomInfos[index].capacity = capacity
       this.roomInfos[index].auditor = auditor
-      this.roomInfos[index].picture = picture === undefined ? this.roomInfos[index].picture : picture
+      this.roomInfos[index].picture =
+        picture === undefined ? this.roomInfos[index].picture : picture
     }
-  },
-  components: {
-    RoomTableRow,
-    AddRoom
   }
 }
 </script>
@@ -69,8 +77,8 @@ export default {
 <style scoped>
 .room-table {
   display: grid;
-  border-left: 1px solid #DCDFE6;
-  border-right: 1px solid #DCDFE6;
+  border-left: 1px solid #dcdfe6;
+  border-right: 1px solid #dcdfe6;
   /*border-bottom: 1px solid #DCDFE6;*/
   /*overflow: scroll;*/
 }
@@ -82,7 +90,7 @@ export default {
   height: 5vh;
   min-height: 50px;
   max-height: 50px;
-  border-bottom: 1px solid #DCDFE6;
+  border-bottom: 1px solid #dcdfe6;
   justify-content: center;
   align-content: center;
 }
@@ -90,10 +98,10 @@ export default {
 .t-head {
   height: 6vh;
   font-weight: bold;
-  background-color: #F7FAF8;
+  background-color: #f7faf8;
 }
 
-.t-head > div{
+.t-head > div {
   padding-top: 18px;
   padding-bottom: 18px;
   min-width: 100px;
@@ -107,9 +115,9 @@ export default {
   min-width: 260px !important;
 }
 
-@media only screen and (max-width : 768px) {
+@media only screen and (max-width: 768px) {
   .t-head div {
-    font-size: .9rem;
+    font-size: 0.9rem;
   }
 
   .room-table {
@@ -117,7 +125,7 @@ export default {
   }
 
   .row {
-    font-size: .8rem;
+    font-size: 0.8rem;
   }
 }
 </style>

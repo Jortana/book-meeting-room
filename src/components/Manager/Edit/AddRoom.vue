@@ -1,26 +1,41 @@
 <template>
   <el-form
-    class="add-form"
+    ref="addForm"
     :model="addForm"
     :rules="addRules"
     :show-message="false"
-    ref="addForm">
+    class="add-form"
+  >
     <el-form-item prop="roomName" class="input-cell narrow-cell">
-      <el-input size="medium" v-model="addForm.roomName" placeholder="房间号"></el-input>
+      <el-input
+        v-model="addForm.roomName"
+        size="medium"
+        placeholder="房间号"
+      ></el-input>
     </el-form-item>
     <el-form-item prop="explain" class="input-cell">
-      <el-input size="medium" v-model="addForm.explain" placeholder="设备描述"></el-input>
+      <el-input
+        v-model="addForm.explain"
+        size="medium"
+        placeholder="设备描述"
+      ></el-input>
     </el-form-item>
     <el-form-item prop="capacity" class="input-cell narrow-cell">
-      <el-input size="medium" v-model="addForm.capacity"><span slot="suffix" class="sup">人</span></el-input>
+      <el-input v-model="addForm.capacity" size="medium">
+        <span slot="suffix" class="sup">人</span>
+      </el-input>
     </el-form-item>
     <el-form-item prop="auditor" class="input-cell">
-      <el-button :class="redBorder ? 'red-border' : ''" size="medium" plain @click="showEditAuditor">
+      <el-button
+        :class="redBorder ? 'red-border' : ''"
+        size="medium"
+        plain
+        @click="showEditAuditor"
+      >
         <span v-if="addForm.auditor.length !== 0">
-          <span
-            v-for="(auditor, index) in addForm.auditor"
-            :key="index">
-            <span v-if="index !== 0">，</span>{{ auditor.userName }}
+          <span v-for="(auditor, index) in addForm.auditor" :key="index">
+            <span v-if="index !== 0">，</span>
+            {{ auditor.userName }}
           </span>
         </span>
         <span v-else>点击选择管理员</span>
@@ -28,10 +43,11 @@
     </el-form-item>
     <el-form-item prop="picture" class="input-cell img-cell">
       <el-upload
-        action=""
         :limit="1"
         :show-file-list="false"
-        :before-upload="getFile">
+        :before-upload="getFile"
+        action=""
+      >
         <el-button size="medium" plain>点击选择图片</el-button>
       </el-upload>
     </el-form-item>
@@ -49,8 +65,8 @@
       :visible.sync="auditEditVisible"
       :auditor.sync="addForm.auditor"
       :allAuditor="allAuditor"
-      :redBorder.sync="redBorder">
-    </audit-edit>
+      :redBorder.sync="redBorder"
+    ></audit-edit>
   </el-form>
 </template>
 
@@ -58,24 +74,14 @@
 import AuditEdit from './AuditEdit'
 export default {
   name: 'AddRoom',
+  components: {
+    AuditEdit
+  },
   props: {
     isAdding: Boolean,
     buildingID: Number
   },
-  mounted () {
-    this.getAllAuditor()
-  },
-  watch: {
-    auditorLength () {
-      this.redBorder = this.addForm.auditor.length === 0
-    }
-  },
-  computed: {
-    auditorLength () {
-      return this.addForm.auditor.length
-    }
-  },
-  data () {
+  data() {
     return {
       addForm: {
         buildingID: this.buildingID,
@@ -94,7 +100,11 @@ export default {
         ],
         capacity: [
           { required: true, message: '请填写可容纳人数', trigger: 'blur' },
-          { pattern: /^[0-9]+$/, message: '人数需要是大于0的数字', trigger: 'blur' }
+          {
+            pattern: /^[0-9]+$/,
+            message: '人数需要是大于0的数字',
+            trigger: 'blur'
+          }
         ],
         auditor: [
           { required: true, message: '请选择管理员', trigger: 'change' }
@@ -105,14 +115,27 @@ export default {
       redBorder: false
     }
   },
+  computed: {
+    auditorLength() {
+      return this.addForm.auditor.length
+    }
+  },
+  watch: {
+    auditorLength() {
+      this.redBorder = this.addForm.auditor.length === 0
+    }
+  },
+  mounted() {
+    this.getAllAuditor()
+  },
   methods: {
-    close () {
+    close() {
       this.$emit('update:isAdding', false)
     },
-    getAllAuditor () {
+    getAllAuditor() {
       this.$axios
         .get('/getAllAuditor')
-        .then(successResponse => {
+        .then((successResponse) => {
           this.allAuditor = successResponse.data
         })
         .catch(() => {
@@ -125,13 +148,13 @@ export default {
           })
         })
     },
-    getFile (file) {
+    getFile(file) {
       this.addForm.img = file
       return false
     },
-    validateRoom (formName) {
+    validateRoom(formName) {
       this.redBorder = this.addForm.auditor.length === 0
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           this.addRoom()
         } else {
@@ -146,10 +169,17 @@ export default {
         }
       })
     },
-    addRoom () {
-      let headers = { 'Content-Type': 'multipart/form-data' }
-      let data = new FormData()
-      let { buildingID, roomName, explain, capacity, auditor, img } = this.addForm
+    addRoom() {
+      const headers = { 'Content-Type': 'multipart/form-data' }
+      const data = new FormData()
+      const {
+        buildingID,
+        roomName,
+        explain,
+        capacity,
+        auditor,
+        img
+      } = this.addForm
       data.append('buildingID', String(buildingID))
       data.append('roomName', roomName)
       data.append('explain', explain)
@@ -164,7 +194,7 @@ export default {
         headers: headers,
         data: data
       })
-        .then(successResponse => {
+        .then((successResponse) => {
           console.log(successResponse.data)
           if (successResponse.data === true) {
             this.$message({
@@ -197,12 +227,9 @@ export default {
           })
         })
     },
-    showEditAuditor () {
+    showEditAuditor() {
       this.auditEditVisible = true
     }
-  },
-  components: {
-    AuditEdit
   }
 }
 </script>
@@ -229,16 +256,16 @@ export default {
 }
 
 .red-border {
-  border-color: #F56C6C;
+  border-color: #f56c6c;
 }
 
 .input-cell .el-input {
   max-width: 75%;
 }
 
-@media only screen and (max-width : 768px) {
+@media only screen and (max-width: 768px) {
   .add-form >>> * {
-    font-size: .8rem;
+    font-size: 0.8rem;
   }
 
   .add-form {
@@ -248,8 +275,8 @@ export default {
   }
 
   .input-cell .el-button {
-    padding-left: .5rem;
-    padding-right: .5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 }
 </style>

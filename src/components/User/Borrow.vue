@@ -3,9 +3,14 @@
     <h2>会议室预定申请</h2>
     <!-- 显示选择的一周教室的借用情况，默认为当前一周 -->
     <div class="panel-container">
-      <el-dropdown trigger="click" class="batch-btn" @command="showNotification">
+      <el-dropdown
+        trigger="click"
+        class="batch-btn"
+        @command="showNotification"
+      >
         <el-button type="primary" size="medium">
-          批量预定 <i class="el-icon-arrow-down el-icon--right"></i>
+          批量预定
+          <i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="normal">会议室</el-dropdown-item>
@@ -14,20 +19,24 @@
       </el-dropdown>
       <!-- 切换楼宇 -->
       <el-tabs
-        class="building-tab"
+        v-loading="buildingLoading"
         v-model="curBuildingID"
+        class="building-tab"
         type="card"
         @tab-click="changeBuilding"
-        v-loading="buildingLoading"
       >
         <el-tab-pane
           v-for="building in buildings"
           :key="String(building.id)"
           :label="building.name"
-          :name="String(building.id)">
+          :name="String(building.id)"
+        >
           <!-- 教室借用时间表 -->
           <div class="timetable">
-            <time-table :ref="String(building.id) + 'timetable'" :building="building"></time-table>
+            <time-table
+              :ref="String(building.id) + 'timetable'"
+              :building="building"
+            ></time-table>
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -36,12 +45,12 @@
       v-if="notificationVisible"
       :visible.sync="notificationVisible"
       :is-batch="true"
-      :type="type">
-    </notification>
-<!--    <batch-apply-form-->
-<!--      v-if="editFormVisible"-->
-<!--      :visible.sync="editFormVisible"-->
-<!--    ></batch-apply-form>-->
+      :type="type"
+    ></notification>
+    <!--    <batch-apply-form-->
+    <!--      v-if="editFormVisible"-->
+    <!--      :visible.sync="editFormVisible"-->
+    <!--    ></batch-apply-form>-->
   </main>
 </template>
 
@@ -51,15 +60,12 @@ import Notification from '../BorrowForm/Notification'
 import BatchApplyForm from '../BorrowForm/BatchApplyForm'
 export default {
   name: 'Borrow',
-  mounted () {
-    // 如果state为空就获取
-    if (this.$store.state.buildings.length === 0) {
-      this.getAllRoom()
-    } else {
-      this.saveBuildingAndRoom()
-    }
+  components: {
+    TimeTable,
+    Notification,
+    BatchApplyForm
   },
-  data () {
+  data() {
     return {
       buildings: [],
       curBuildingID: '',
@@ -69,39 +75,41 @@ export default {
       type: ''
     }
   },
+  mounted() {
+    // 如果state为空就获取
+    if (this.$store.state.buildings.length === 0) {
+      this.getAllRoom()
+    } else {
+      this.saveBuildingAndRoom()
+    }
+  },
   methods: {
-    getAllRoom () {
+    getAllRoom() {
       this.buildingLoading = true
       // 获取所有的建筑和房间号
       this.$axios
         .get('/getAllRoom')
-        .then(successResponse => {
+        .then((successResponse) => {
           this.$store.commit('saveBuildings', successResponse.data)
           this.saveBuildingAndRoom()
         })
-        .catch(() => {
-        })
+        .catch(() => {})
       this.buildingLoading = false
     },
-    saveBuildingAndRoom () {
+    saveBuildingAndRoom() {
       this.buildings = this.$store.state.buildings
       this.curBuildingID = String(this.buildings[0].id)
     },
-    changeBuilding (tab, event) {
+    changeBuilding(tab) {
       // 点击楼宇的选项卡切换当前楼宇
       const tabName = tab.name + 'timetable'
       const component = this.$refs[tabName][0]
       component.getBusyTime()
     },
-    showNotification (type) {
+    showNotification(type) {
       this.type = type
       this.notificationVisible = true
     }
-  },
-  components: {
-    TimeTable,
-    Notification,
-    BatchApplyForm
   }
 }
 </script>
@@ -139,7 +147,7 @@ export default {
   z-index: 10;
 }
 
-@media only screen and (max-width : 376px) {
+@media only screen and (max-width: 376px) {
   .batch-btn {
     top: -50px;
   }

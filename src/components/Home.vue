@@ -1,7 +1,7 @@
 <template>
   <div id="view">
     <nav-menu id="nav"></nav-menu>
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
@@ -24,6 +24,4 @@ export default {
 #logo {
   text-align: left;
 }
-
-#nav {}
 </style>

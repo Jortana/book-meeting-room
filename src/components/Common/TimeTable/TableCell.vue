@@ -5,22 +5,43 @@
       @mouseenter="showApply = true"
       @mouseleave="showApply = false"
     >
-        <el-scrollbar wrap-class="list">
-          <div class="time" v-for="(time, index) in dayTimetable" :key="index">
-            <div class="time-content bold">{{ time.startTime }} - {{ time.endTime }}</div>
-<!--            <div class="time-content">{{ time.reason }}</div>-->
-            <div class="time-content">{{ time['meetingName'] }}</div>
-            <div class="time-content">{{ time['hostName'] }}</div>
-            <div class="time-content" v-if="time.state === 1">成功预定 <i class="el-icon-success"></i></div>
-            <div class="time-content" v-else>等待审核 <i class="el-icon-warning"></i></div>
+      <el-scrollbar wrap-class="list">
+        <div v-for="(time, index) in dayTimetable" :key="index" class="time">
+          <div class="time-content bold">
+            {{ time.startTime }} - {{ time.endTime }}
           </div>
-        </el-scrollbar>
-        <transition name="el-zoom-in-bottom" v-if="this.$store.state.user.isManager !== 2">
-          <div v-show="showApply" class="apply-btn-container transition-box">
-            <el-button v-if="ban === 0" class="apply-btn" type="success" plain @click="showNotificationDialog">申请</el-button>
-            <el-button v-else class="apply-btn"  type="info" disabled plain>暂不可申请</el-button>
+          <!--            <div class="time-content">{{ time.reason }}</div>-->
+          <div class="time-content">{{ time['meetingName'] }}</div>
+          <div class="time-content">{{ time['hostName'] }}</div>
+          <div v-if="time.state === 1" class="time-content">
+            成功预定
+            <i class="el-icon-success"></i>
           </div>
-        </transition>
+          <div v-else class="time-content">
+            等待审核
+            <i class="el-icon-warning"></i>
+          </div>
+        </div>
+      </el-scrollbar>
+      <transition
+        v-if="this.$store.state.user.isManager !== 2"
+        name="el-zoom-in-bottom"
+      >
+        <div v-show="showApply" class="apply-btn-container transition-box">
+          <el-button
+            v-if="ban === 0"
+            class="apply-btn"
+            type="success"
+            plain
+            @click="showNotificationDialog"
+          >
+            申请
+          </el-button>
+          <el-button v-else class="apply-btn" type="info" disabled plain>
+            暂不可申请
+          </el-button>
+        </div>
+      </transition>
     </div>
     <!-- 使用须知的dialog -->
     <notification
@@ -29,8 +50,7 @@
       :roomInfo="roomInfo"
       :type="type"
       @refresh="$emit('refresh')"
-    >
-    </notification>
+    ></notification>
   </div>
 </template>
 
@@ -38,55 +58,58 @@
 import Notification from '../../BorrowForm/Notification'
 export default {
   name: 'TableCell',
+  components: {
+    Notification
+  },
   props: {
     dayTimetable: {
       type: Array,
-      default () {
+      default() {
         return []
       }
     },
     building: {
       type: Object,
-      default () {
+      default() {
         return null
       }
     },
     roomName: {
       type: String,
-      default () {
+      default() {
         return ''
       }
     },
     ban: Number,
     date: {
       type: Date,
-      default () {
+      default() {
         return null
       }
     }
   },
+  data() {
+    return {
+      showApply: false,
+      showNotification: false
+    }
+  },
   computed: {
-    roomInfo () {
+    roomInfo() {
       return {
         building: this.building,
         roomName: this.roomName,
         date: this.date
       }
     },
-    type () {
+    type() {
       return this.building.id === 29 ? 'hall' : 'normal'
     }
   },
-  data () {
-    return {
-      showApply: false,
-      showNotification: false
-    }
-  },
   methods: {
-    showNotificationDialog () {
-      let today = new Date().getTime()
-      let tarDay = this.date.getTime()
+    showNotificationDialog() {
+      const today = new Date().getTime()
+      const tarDay = this.date.getTime()
       if (tarDay > today) {
         this.showApply = false
         this.showNotification = true
@@ -100,9 +123,6 @@ export default {
         })
       }
     }
-  },
-  components: {
-    Notification
   }
 }
 </script>
@@ -118,7 +138,7 @@ export default {
   position: relative;
 }
 
-.busy-time >>> .el-scrollbar__wrap{
+.busy-time >>> .el-scrollbar__wrap {
   overflow-x: hidden;
 }
 

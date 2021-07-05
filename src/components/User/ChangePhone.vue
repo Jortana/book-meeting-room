@@ -1,17 +1,17 @@
 <template>
   <!-- 修改电话号码的dialog -->
   <el-dialog
-    title="修改手机号码"
     :visible.sync="visible"
-    width="28%"
     :before-close="close"
     :close-on-click-modal="false"
+    title="修改手机号码"
+    width="28%"
     center>
     <el-form
-      class="phone-form"
+      ref="passwordForm"
       :model="phoneForm"
       :rules="phoneRules"
-      ref="passwordForm"
+      class="phone-form"
       label-width="80px">
       <el-form-item label="新号码" prop="phone">
         <el-input v-model="phoneForm.phone" auto-complete="off"></el-input>
@@ -30,7 +30,7 @@ export default {
   props: {
     visible: Boolean
   },
-  data () {
+  data() {
     return {
       phoneForm: {
         phone: ''
@@ -44,13 +44,13 @@ export default {
     }
   },
   methods: {
-    close () {
+    close() {
       this.$emit('update:visible', false)
     },
-    changePhone (formName) {
+    changePhone(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          let data = {
+          const data = {
             userNum: this.$store.state.user.userNum,
             phone: this.phoneForm.phone
           }

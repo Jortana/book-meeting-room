@@ -1,24 +1,36 @@
 <template>
   <div class="main">
     <div class="logo">
-      <img src="../assets/logo_white.png" alt="logo">
+      <img src="../assets/logo_white.png" alt="logo" />
     </div>
     <div class="menu">
       <el-menu
-        class="lg-menu"
         :default-active="curIndex"
+        class="lg-menu"
         router
         mode="horizontal"
         text-color="#BBCDC3"
         background-color="#30694A"
-        active-text-color="#FDCA00">
-        <el-menu-item class="bold-border" v-for="(item, i) in navList" :key="i" :index="item.index">
+        active-text-color="#FDCA00"
+      >
+        <el-menu-item
+          v-for="(item, i) in navList"
+          :key="i"
+          :index="item.index"
+          class="bold-border"
+        >
           {{ item.name }}
         </el-menu-item>
-        <el-submenu index="user" id="user">
-          <template slot="title"><span class="sub-title">{{ user.name }}</span></template>
-          <el-menu-item class="sub-menu" @click="showChangePassword">修改密码</el-menu-item>
-          <el-menu-item class="sub-menu" @click="showChangePhone">修改号码</el-menu-item>
+        <el-submenu id="user" index="user">
+          <template slot="title">
+            <span class="sub-title">{{ user.name }}</span>
+          </template>
+          <el-menu-item class="sub-menu" @click="showChangePassword">
+            修改密码
+          </el-menu-item>
+          <el-menu-item class="sub-menu" @click="showChangePhone">
+            修改号码
+          </el-menu-item>
           <el-menu-item class="sub-menu" @click="showLogOut">退出</el-menu-item>
         </el-submenu>
       </el-menu>
@@ -28,9 +40,13 @@
       <!-- 移动版小菜单 -->
       <div class="hide-menu">
         <transition name="el-fade-in-linear">
-          <el-dialog
-            :visible.sync="menuVisible">
-            <div class="hide-submenu" v-for="nav in navList" :key="nav.index" @click="jumpTo(nav.index)">
+          <el-dialog :visible.sync="menuVisible">
+            <div
+              v-for="nav in navList"
+              :key="nav.index"
+              class="hide-submenu"
+              @click="jumpTo(nav.index)"
+            >
               <span>{{ nav.name }}</span>
             </div>
             <div class="hide-submenu border-top" @click="showChangePassword">
@@ -49,10 +65,11 @@
       <!-- 确认退出的dialog -->
       <div class="operation">
         <el-dialog
-          title="确认退出"
           :visible.sync="logOutVisible"
+          title="确认退出"
           width="28%"
-          center>
+          center
+        >
           <span>确认退出吗？</span>
           <span slot="footer" class="dialog-footer">
             <el-button @click="logOutVisible = false">取 消</el-button>
@@ -60,9 +77,15 @@
           </span>
         </el-dialog>
         <!-- 修改密码的dialog -->
-        <change-password v-if="changePasswordVisible" :visible.sync="changePasswordVisible"></change-password>
+        <change-password
+          v-if="changePasswordVisible"
+          :visible.sync="changePasswordVisible"
+        ></change-password>
         <!-- 修改手机号码的dialog -->
-        <change-phone v-if="changePhoneVisible" :visible.sync="changePhoneVisible"></change-phone>
+        <change-phone
+          v-if="changePhoneVisible"
+          :visible.sync="changePhoneVisible"
+        ></change-phone>
       </div>
     </div>
   </div>
@@ -73,13 +96,12 @@ import ChangePassword from './User/ChangePassword'
 import ChangePhone from './User/ChangePhone'
 export default {
   name: 'NavMenu',
-  computed: {
-    curIndex () {
-      return this.$route.path
-    }
+  components: {
+    ChangePassword,
+    ChangePhone
   },
-  data () {
-    let user = this.$store.state.user
+  data() {
+    const user = this.$store.state.user
     let navList = []
     if (user.isManager <= 1) {
       navList = [
@@ -96,9 +118,7 @@ export default {
         { index: '/record', name: '修改预定' }
       ]
     } else {
-      navList = [
-        { index: '/borrow', name: '预定申请' }
-      ]
+      navList = [{ index: '/borrow', name: '预定申请' }]
     }
     return {
       navList: navList,
@@ -109,33 +129,34 @@ export default {
       menuVisible: false
     }
   },
+  computed: {
+    curIndex() {
+      return this.$route.path
+    }
+  },
   methods: {
-    showLogOut () {
+    showLogOut() {
       this.logOutVisible = true
     },
-    logOut () {
+    logOut() {
       this.$store.commit('logOut')
       this.$router.go(0)
     },
-    showChangePassword () {
+    showChangePassword() {
       this.changePasswordVisible = true
     },
-    showChangePhone () {
+    showChangePhone() {
       this.changePhoneVisible = true
     },
-    jumpTo (index) {
+    jumpTo(index) {
       this.menuVisible = false
       this.$router.push({
         path: index
       })
     },
-    toggleMenu () {
+    toggleMenu() {
       this.menuVisible = !this.menuVisible
     }
-  },
-  components: {
-    ChangePassword,
-    ChangePhone
   }
 }
 </script>
@@ -162,10 +183,6 @@ export default {
   left: 0;
 }
 
-#user {
-  /*float: right;*/
-}
-
 .el-menu > * {
   font-size: 1rem;
   font-weight: bold;
@@ -180,7 +197,7 @@ export default {
   font-weight: normal;
 }
 
-@media only screen and (max-width : 1440px) {
+@media only screen and (max-width: 1440px) {
   .lg-menu {
     display: none;
   }
@@ -194,7 +211,7 @@ export default {
     background-clip: content-box;
     background-color: #fff;
     position: absolute;
-    right: .3rem;
+    right: 0.3rem;
     top: 1rem;
   }
 
@@ -218,8 +235,8 @@ export default {
 
   .hide-menu >>> .el-dialog__close {
     position: absolute;
-    top: -.5rem;
-    right: -.5rem;
+    top: -0.5rem;
+    right: -0.5rem;
   }
 
   .hide-submenu {
@@ -231,12 +248,12 @@ export default {
   }
 
   .border-top {
-    margin-top: .2rem;
-    border-top: 1px solid #E4E7ED;
+    margin-top: 0.2rem;
+    border-top: 1px solid #e4e7ed;
   }
 }
 
-@media only screen and (max-width : 768px) {
+@media only screen and (max-width: 768px) {
   .operation >>> .el-dialog {
     width: 90% !important;
   }
@@ -250,7 +267,7 @@ export default {
   }
 }
 
-@media only screen and (max-width : 376px) {
+@media only screen and (max-width: 376px) {
   .logo img {
     width: 90%;
   }

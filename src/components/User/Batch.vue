@@ -1,9 +1,9 @@
 <template>
   <div class="table-container">
     <el-table
-      class="record-table"
+      v-loading="recordLoading"
       :data="batchRecord"
-      v-loading="recordLoading">
+      class="record-table">
       <el-table-column
         label="教室">
         <template slot-scope="scope">
@@ -45,8 +45,8 @@
         label="操作">
         <template slot-scope="scope">
           <div>
-            <el-button @click="showEditForm(scope.row)" type="text" size="small">修改</el-button>
-            <el-button @click="showConfirm(scope.row)" type="text" size="small">取消申请</el-button>
+            <el-button type="text" size="small" @click="showEditForm(scope.row)">修改</el-button>
+            <el-button type="text" size="small" @click="showConfirm(scope.row)">取消申请</el-button>
           </div>
         </template>
       </el-table-column>
@@ -54,10 +54,10 @@
     <batch-apply-form v-if="editFormVisible" :visible.sync="editFormVisible" :roomInfo="roomInfo"></batch-apply-form>
     <!-- 取消预定确认窗口 -->
     <el-dialog
-      title="确定取消"
       :visible.sync="confirmVisible"
-      width="30%"
       :center="true"
+      title="确定取消"
+      width="30%"
     >
       <span>确定取消借教室吗?</span>
       <span slot="footer" class="dialog-footer">
@@ -73,10 +73,11 @@ import Notification from '../BorrowForm/Notification'
 import BatchApplyForm from '../BorrowForm/BatchApplyForm'
 export default {
   name: 'Batch',
-  created () {
-    this.getRecord()
+  components: {
+    Notification,
+    BatchApplyForm
   },
-  data () {
+  data() {
     return {
       batchRecord: [],
       recordLoading: false,
@@ -87,8 +88,11 @@ export default {
       editFormVisible: false
     }
   },
+  created() {
+    this.getRecord()
+  },
   methods: {
-    getRecord () {
+    getRecord() {
       this.recordLoading = true
       this.$axios
         .post('/getMultiRecByUser', {
@@ -108,11 +112,11 @@ export default {
         })
       this.recordLoading = false
     },
-    showConfirm (record) {
+    showConfirm(record) {
       this.confirmVisible = true
       this.curRecord = record
     },
-    cancelBorrow () {
+    cancelBorrow() {
       this.$axios
         .post('/delMultiRecByID', {
           ID: this.curRecord.id
@@ -150,14 +154,10 @@ export default {
           })
         })
     },
-    showEditForm (record) {
+    showEditForm(record) {
       this.roomInfo = record
       this.editFormVisible = true
     }
-  },
-  components: {
-    Notification,
-    BatchApplyForm
   }
 }
 </script>

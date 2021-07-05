@@ -1,17 +1,22 @@
 <template>
   <div>
     <el-dialog
-      title="教育科学学院会议室申请"
-      class="apply-dialog"
       :visible.sync="visible"
       :width="width"
-      center
       :before-close="close"
       :close-on-click-modal="false"
+      title="教育科学学院会议室申请"
+      class="apply-dialog"
+      center
     >
       <div>
         <!-- 申请会议室的表单 -->
-        <el-form :model="applyForm" :rules="applyFormRules" ref="applyForm" label-width="80px">
+        <el-form
+          ref="applyForm"
+          :model="applyForm"
+          :rules="applyFormRules"
+          label-width="80px"
+        >
           <!-- 会议名称 -->
           <el-form-item label="会议名称" prop="meetingName">
             <el-input v-model="applyForm.meetingName"></el-input>
@@ -37,7 +42,11 @@
           <el-row>
             <el-col :span="colNum">
               <el-form-item label="会议类型" prop="meetingType">
-                <el-select class="full-width" v-model="applyForm.meetingType" placeholder="请选择会议类型">
+                <el-select
+                  v-model="applyForm.meetingType"
+                  class="full-width"
+                  placeholder="请选择会议类型"
+                >
                   <el-option value="上课"></el-option>
                   <el-option value="会议"></el-option>
                   <el-option value="报告"></el-option>
@@ -46,45 +55,54 @@
             </el-col>
             <el-col :span="colNum">
               <el-form-item label="会议人数" prop="meetingNumber">
-                <el-input type="number" v-model="applyForm.meetingNumber"></el-input>
+                <el-input
+                  v-model="applyForm.meetingNumber"
+                  type="number"
+                ></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <!-- 会议内容 -->
           <el-form-item label="会议内容" prop="meetingContent">
-            <el-input type="textarea" v-model="applyForm.meetingContent" :autosize="{ minRows: 2 }"></el-input>
+            <el-input
+              v-model="applyForm.meetingContent"
+              :autosize="{ minRows: 2 }"
+              type="textarea"
+            ></el-input>
           </el-form-item>
           <!-- 会议室和日期 -->
           <el-row>
             <el-col :span="colNum">
               <el-form-item label="楼宇" prop="buildingID">
                 <el-select
-                  class="full-width"
-                  v-model="applyForm.buildingID"
-                  placeholder="请选择楼宇"
                   ref="curBuilding"
-                  @change="setCurBuilding">
+                  v-model="applyForm.buildingID"
+                  class="full-width"
+                  placeholder="请选择楼宇"
+                  @change="setCurBuilding"
+                >
                   <el-option
                     v-for="(building, index) in buildings"
                     :key="index"
                     :label="building.name"
-                    :value="building.id">
-                  </el-option>
+                    :value="building.id"
+                  ></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="colNum">
               <el-form-item label="会议室" prop="roomName">
                 <el-select
-                  class="full-width"
                   v-model="applyForm.roomName"
+                  class="full-width"
                   placeholder="请选择会议室"
-                  no-data-text="请先选择楼宇">
+                  no-data-text="请先选择楼宇"
+                >
                   <el-option
-                    v-for="(room, index ) in curBuilding.room"
+                    v-for="(room, index) in curBuilding.room"
                     :key="index"
-                    :value="room.roomName">
-                  </el-option>
+                    :value="room.roomName"
+                  ></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
@@ -92,33 +110,43 @@
           <!-- 日期 -->
           <el-form-item prop="date" label="起止日期">
             <el-date-picker
-              class="full-width"
               v-model="applyForm.date"
+              class="full-width"
               type="daterange"
               range-separator="至"
               start-placeholder="起始日期"
               end-placeholder="结束日期"
-              value-format="yyyy-MM-dd">
-            </el-date-picker>
+              value-format="yyyy-MM-dd"
+            ></el-date-picker>
           </el-form-item>
           <!-- 每周几 -->
           <el-form-item prop="weekday" label="借用天数">
-            <el-radio-group class="full-width week-radio" v-model="applyForm.weekday" v-if="false">
+            <el-radio-group
+              v-if="false"
+              v-model="applyForm.weekday"
+              class="full-width week-radio"
+            >
               <el-radio-button
                 v-for="(day, index) in weekZh"
                 :key="index"
-                :label="index + 1">
+                :label="index + 1"
+              >
                 每周{{ day }}
               </el-radio-button>
             </el-radio-group>
-            <el-select class="full-width" v-model="applyForm.weekday" placeholder="请选择" v-else>
+            <el-select
+              v-else
+              v-model="applyForm.weekday"
+              class="full-width"
+              placeholder="请选择"
+            >
               <el-option label="每一天" value="0"></el-option>
               <el-option
                 v-for="(day, index) in weekZh"
                 :key="index"
                 :label="'每周' + day"
-                :value="index + 1">
-              </el-option>
+                :value="index + 1"
+              ></el-option>
             </el-select>
           </el-form-item>
           <!-- 会议时间 -->
@@ -126,8 +154,6 @@
             <el-col :span="colNum">
               <el-form-item prop="startTime" label="起始时间">
                 <el-time-select
-                  class="full-width"
-                  placeholder="选择起始时间"
                   v-model="applyForm.startTime"
                   :picker-options="{
                     start: '06:00',
@@ -135,15 +161,14 @@
                     end: '22:50',
                     maxTime: applyForm.endTime
                   }"
-                >
-                </el-time-select>
+                  class="full-width"
+                  placeholder="选择起始时间"
+                ></el-time-select>
               </el-form-item>
             </el-col>
             <el-col :span="colNum">
               <el-form-item prop="endTime" label="结束时间">
                 <el-time-select
-                  class="full-width"
-                  placeholder="选择结束时间"
                   v-model="applyForm.endTime"
                   :picker-options="{
                     start: '06:05',
@@ -151,18 +176,24 @@
                     end: '22:55',
                     minTime: applyForm.startTime
                   }"
-                >
-                </el-time-select>
+                  class="full-width"
+                  placeholder="选择结束时间"
+                ></el-time-select>
               </el-form-item>
             </el-col>
           </el-row>
           <!-- 审批人 -->
-          <el-form-item label="审批人" prop="auditor" v-if="auditors.length > 0">
+          <el-form-item
+            v-if="auditors.length > 0"
+            label="审批人"
+            prop="auditor"
+          >
             <el-select
-              class="full-width"
               v-model="applyForm.auditor"
+              class="full-width"
               placeholder="请选择审批人"
-              no-data-text="请先选择楼宇和会议室">
+              no-data-text="请先选择楼宇和会议室"
+            >
               <el-option
                 v-for="(auditor, index) in auditors"
                 :key="index"
@@ -175,7 +206,9 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="close">取 消</el-button>
-        <el-button type="primary" @click="validateAndSubmit('applyForm')">申 请</el-button>
+        <el-button type="primary" @click="validateAndSubmit('applyForm')">
+          申 请
+        </el-button>
       </span>
     </el-dialog>
   </div>
@@ -191,37 +224,12 @@ export default {
     },
     roomInfo: {
       type: Object,
-      default () {
+      default() {
         return null
       }
     }
   },
-  mounted () {
-    // 如果state为空就获取
-    if (this.$store.state.buildings.length === 0) {
-      this.getAllRoom()
-    } else {
-      this.saveBuildingAndRoom()
-    }
-    this.initApplyForm()
-  },
-  computed: {
-    curRoomName () {
-      return this.applyForm.roomName
-    },
-    colNum () {
-      return document.body.clientWidth > 375 ? 12 : 24
-    },
-    width () {
-      return document.body.clientWidth > 375 ? '510px' : '90vw'
-    }
-  },
-  watch: {
-    curRoomName () {
-      this.getAuditor()
-    }
-  },
-  data () {
+  data() {
     return {
       isEdit: false,
       buildings: [],
@@ -244,11 +252,11 @@ export default {
       curBuilding: {},
       weekZh: ['一', '二', '三', '四', '五', '六', '日'],
       meetingTypeOptions: {
-        '上课': 0,
-        '会议': 1,
-        '报告': 2,
-        '开题': 3,
-        '答辩': 4
+        上课: 0,
+        会议: 1,
+        报告: 2,
+        开题: 3,
+        答辩: 4
       },
       meetingTypeOptionsArr: ['上课', '会议', '报告', '开题', '答辩'],
       userName: this.$store.state.user.name,
@@ -268,7 +276,11 @@ export default {
         ],
         meetingNumber: [
           { required: true, message: '请输入会议人数', trigger: 'blur' },
-          { pattern: /^[0-9]+$/, message: '人数需要是大于0的数字', trigger: 'blur' }
+          {
+            pattern: /^[0-9]+$/,
+            message: '人数需要是大于0的数字',
+            trigger: 'blur'
+          }
         ],
         meetingContent: [
           { required: true, message: '请输入会议内容', trigger: 'blur' }
@@ -279,9 +291,7 @@ export default {
         roomName: [
           { required: true, message: '请选择会议室', trigger: 'change' }
         ],
-        date: [
-          { required: true, message: '请选择日期', trigger: 'change' }
-        ],
+        date: [{ required: true, message: '请选择日期', trigger: 'change' }],
         weekday: [
           { required: true, message: '请选择借用天数', trigger: 'change' }
         ],
@@ -297,26 +307,50 @@ export default {
       }
     }
   },
+  computed: {
+    curRoomName() {
+      return this.applyForm.roomName
+    },
+    colNum() {
+      return document.body.clientWidth > 375 ? 12 : 24
+    },
+    width() {
+      return document.body.clientWidth > 375 ? '510px' : '90vw'
+    }
+  },
+  watch: {
+    curRoomName() {
+      this.getAuditor()
+    }
+  },
+  mounted() {
+    // 如果state为空就获取
+    if (this.$store.state.buildings.length === 0) {
+      this.getAllRoom()
+    } else {
+      this.saveBuildingAndRoom()
+    }
+    this.initApplyForm()
+  },
   methods: {
-    close () {
+    close() {
       this.$emit('update:visible', false)
       this.$emit('close')
       this.$emit('refresh')
     },
-    getAllRoom () {
+    getAllRoom() {
       // 获取所有的建筑和房间号
       this.$axios
         .get('/getAllRoom')
-        .then(successResponse => {
+        .then((successResponse) => {
           this.$store.commit('saveBuildings', successResponse.data)
           this.saveBuildingAndRoom()
         })
-        .catch(() => {
-        })
+        .catch(() => {})
       this.buildingLoading = false
     },
-    saveBuildingAndRoom () {
-      let buildings = [...this.$store.state.buildings]
+    saveBuildingAndRoom() {
+      const buildings = [...this.$store.state.buildings]
       buildings.forEach((building, index, buildings) => {
         if (building.id === 29) {
           buildings.splice(index, 1)
@@ -324,24 +358,26 @@ export default {
       })
       this.buildings = buildings
     },
-    initApplyForm () {
+    initApplyForm() {
       if (this.roomInfo !== null) {
         // 修改
         this.isEdit = true
         this.applyForm = this.roomInfo
-        this.applyForm.meetingType = this.meetingTypeOptionsArr[this.roomInfo.meetingType] || this.roomInfo.meetingType
+        this.applyForm.meetingType =
+          this.meetingTypeOptionsArr[this.roomInfo.meetingType] ||
+          this.roomInfo.meetingType
         this.applyForm.date = []
         this.applyForm.date[0] = new Date(this.roomInfo.startDate)
         this.applyForm.date[1] = new Date(this.roomInfo.endDate)
       }
     },
-    getAuditor () {
+    getAuditor() {
       this.$axios
         .post('/getAuditor', {
           buildingID: this.applyForm.buildingID,
           roomName: this.applyForm.roomName
         })
-        .then(successResponse => {
+        .then((successResponse) => {
           this.auditors = successResponse.data
         })
         .catch(() => {
@@ -354,7 +390,7 @@ export default {
           })
         })
     },
-    setCurBuilding (building) {
+    setCurBuilding(building) {
       this.applyForm.roomName = ''
       for (let i = 0; i < this.buildings.length; i++) {
         if (this.buildings[i].id === building) {
@@ -363,10 +399,10 @@ export default {
         }
       }
     },
-    validateAndSubmit (formName) {
+    validateAndSubmit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          let data = Object.assign({}, this.applyForm)
+          const data = Object.assign({}, this.applyForm)
           data.startDate = this.$options.filters['formatDate'](data.date[0])
           data.endDate = this.$options.filters['formatDate'](data.date[1])
           data.meetingType = this.meetingTypeOptions[data.meetingType]
@@ -389,11 +425,11 @@ export default {
         }
       })
     },
-    submit (data) {
-      let url = this.isEdit ? '/updateMultiRecord' : '/addMultiRecord'
+    submit(data) {
+      const url = this.isEdit ? '/updateMultiRecord' : '/addMultiRecord'
       this.$axios
         .post(url, data)
-        .then(successResponse => {
+        .then((successResponse) => {
           if (successResponse.data === true) {
             // 申请成功
             this.$message({

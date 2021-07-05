@@ -1,54 +1,64 @@
 <template>
   <main>
     <h2>我的记录</h2>
-    <el-tabs
-      class="type-tab"
-      v-model="curRecordType"
-      type="card">
+    <el-tabs v-model="curRecordType" class="type-tab" type="card">
       <el-tab-pane label="普通预定" name="normal">
         <el-table
-          class="record-table"
-          :data="record"
           v-loading="recordLoading"
+          :data="record"
+          class="record-table"
           cell-class-name="t-cell"
         >
           <el-table-column
             prop="date"
             label="日期"
-            min-width="100">
-          </el-table-column>
+            min-width="100"
+          ></el-table-column>
           <el-table-column
             prop="room"
             label="教室"
-            min-width="100">
-          </el-table-column>
-          <el-table-column
-            prop="startTime"
-            label="起始时间">
-          </el-table-column>
-          <el-table-column
-            prop="endTime"
-            label="结束时间">
-          </el-table-column>
-          <el-table-column
-            label="审核状态"
-            min-width="100">
+            min-width="100"
+          ></el-table-column>
+          <el-table-column prop="startTime" label="起始时间"></el-table-column>
+          <el-table-column prop="endTime" label="结束时间"></el-table-column>
+          <el-table-column label="审核状态" min-width="100">
             <template slot-scope="scope">
-              <div v-if="scope.row.state === 0">等待审核 <i class="el-icon-warning"></i></div>
-              <div v-else-if="scope.row.state === 1">预定成功 <i class="el-icon-success"></i></div>
-              <div v-else>预定失败 <i class="el-icon-error"></i></div>
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="操作"
-            min-width="110">
-            <template slot-scope="scope">
-              <div v-if="scope.row.editable">
-                <el-button @click="editBorrow(scope.row)" type="text" size="small">修改</el-button>
-                <el-button @click="showConfirm(scope.row)" type="text" size="small">取消申请</el-button>
+              <div v-if="scope.row.state === 0">
+                等待审核
+                <i class="el-icon-warning"></i>
+              </div>
+              <div v-else-if="scope.row.state === 1">
+                预定成功
+                <i class="el-icon-success"></i>
               </div>
               <div v-else>
-                <el-button type="text" size="small" disabled>不可修改</el-button>
+                预定失败
+                <i class="el-icon-error"></i>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" min-width="110">
+            <template slot-scope="scope">
+              <div v-if="scope.row.editable">
+                <el-button
+                  type="text"
+                  size="small"
+                  @click="editBorrow(scope.row)"
+                >
+                  修改
+                </el-button>
+                <el-button
+                  type="text"
+                  size="small"
+                  @click="showConfirm(scope.row)"
+                >
+                  取消申请
+                </el-button>
+              </div>
+              <div v-else>
+                <el-button type="text" size="small" disabled>
+                  不可修改
+                </el-button>
               </div>
             </template>
           </el-table-column>
@@ -58,13 +68,21 @@
         <batch class="record-table"></batch>
       </el-tab-pane>
     </el-tabs>
-    <apply-form v-if="editBorrowVisible" :visible.sync="editBorrowVisible" :roomInfo="roomInfo"></apply-form>
-    <hall-apply-form v-if="editHallBorrowVisible" :visible.sync="editHallBorrowVisible" :roomInfo="roomInfo"></hall-apply-form>
+    <apply-form
+      v-if="editBorrowVisible"
+      :visible.sync="editBorrowVisible"
+      :roomInfo="roomInfo"
+    ></apply-form>
+    <hall-apply-form
+      v-if="editHallBorrowVisible"
+      :visible.sync="editHallBorrowVisible"
+      :roomInfo="roomInfo"
+    ></hall-apply-form>
     <el-dialog
-      title="确定取消"
       :visible.sync="confirmVisible"
-      width="30%"
       :center="true"
+      title="确定取消"
+      width="30%"
     >
       <span>确定取消借教室吗?</span>
       <span slot="footer" class="dialog-footer">
@@ -81,10 +99,12 @@ import HallApplyForm from '../BorrowForm/HallApplyForm'
 import Batch from './Batch'
 export default {
   name: 'Record',
-  mounted () {
-    this.getRecord()
+  components: {
+    ApplyForm,
+    HallApplyForm,
+    Batch
   },
-  data () {
+  data() {
     return {
       record: [],
       recordLoading: true,
@@ -96,31 +116,39 @@ export default {
       curRecordType: 'normal'
     }
   },
+  mounted() {
+    this.getRecord()
+  },
   methods: {
-    getRecord () {
+    getRecord() {
       this.$axios
         .post('/getRecordByUser', {
           userNum: this.$store.state.user.userNum
         })
-        .then(successResponse => {
+        .then((successResponse) => {
           this.recordLoading = false
           successResponse.data.forEach((record) => {
-            let { date, buildingName, roomName } = record
+            const { date, buildingName, roomName } = record
             let todayDate = new Date()
-            let today = todayDate.getFullYear() + '-' + (todayDate.getMonth() + 1) + '-' + todayDate.getDate()
+            const today =
+              todayDate.getFullYear() +
+              '-' +
+              (todayDate.getMonth() + 1) +
+              '-' +
+              todayDate.getDate()
             todayDate = new Date(today)
-            let editable = new Date(date).getTime() - todayDate.getTime() >= 86400000
+            const editable =
+              new Date(date).getTime() - todayDate.getTime() >= 86400000
             record.editable = editable
             record.room = buildingName + ' ' + roomName
             this.record.push(record)
           })
         })
-        .catch(() => {
-        })
+        .catch(() => {})
     },
-    editBorrow (record) {
+    editBorrow(record) {
       // 修改借教室的信息
-      let building = {
+      const building = {
         id: record.buildingID,
         name: record.buildingName
       }
@@ -136,17 +164,17 @@ export default {
         this.editBorrowVisible = true
       }
     },
-    showConfirm (record) {
+    showConfirm(record) {
       // 取消借教室
       this.confirmVisible = true
       this.curForm = record
     },
-    cancelBorrow () {
+    cancelBorrow() {
       this.$axios
         .post('/delByID', {
           ID: this.curForm['id']
         })
-        .then(successResponse => {
+        .then((successResponse) => {
           if (successResponse.data === true) {
             this.$message({
               showClose: true,
@@ -169,14 +197,8 @@ export default {
             this.$router.go(0)
           }, 300)
         })
-        .catch(failResponse => {
-        })
+        .catch()
     }
-  },
-  components: {
-    ApplyForm,
-    HallApplyForm,
-    Batch
   }
 }
 </script>
@@ -196,13 +218,13 @@ main >>> thead {
 }
 
 .record-table {
-  border-left: 1px solid #DCDFE6;
-  border-right: 1px solid #DCDFE6;
+  border-left: 1px solid #dcdfe6;
+  border-right: 1px solid #dcdfe6;
 }
 
-@media only screen and (max-width : 768px) {
+@media only screen and (max-width: 768px) {
   main >>> thead {
-    font-size: .9rem;
+    font-size: 0.9rem;
   }
 }
 </style>

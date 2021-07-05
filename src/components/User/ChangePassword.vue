@@ -1,26 +1,26 @@
 <template>
   <!-- 修改密码的dialog -->
   <el-dialog
-    title="修改密码"
     :visible.sync="visible"
-    width="28%"
     :before-close="close"
     :close-on-click-modal="false"
+    title="修改密码"
+    width="28%"
     center>
     <el-form
-      class="password-form"
+      ref="passwordForm"
       :model="passwordForm"
       :rules="passwordRules"
-      ref="passwordForm"
+      class="password-form"
       label-width="80px">
       <el-form-item label="旧密码" prop="oldPassword">
-        <el-input type="password" v-model="passwordForm.oldPassword" auto-complete="off"></el-input>
+        <el-input v-model="passwordForm.oldPassword" type="password" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="新密码" prop="newPassword">
-        <el-input type="password" v-model="passwordForm.newPassword" auto-complete="off"></el-input>
+        <el-input v-model="passwordForm.newPassword" type="password" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="确认密码" prop="checkPassword">
-        <el-input type="password" v-model="passwordForm.checkPassword" auto-complete="off"></el-input>
+        <el-input v-model="passwordForm.checkPassword" type="password" auto-complete="off"></el-input>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -36,8 +36,8 @@ export default {
   props: {
     visible: Boolean
   },
-  data () {
-    let checkPassword = (rule, value, callback) => {
+  data() {
+    const checkPassword = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'))
       } else if (value !== this.passwordForm.newPassword) {
@@ -46,7 +46,7 @@ export default {
         callback()
       }
     }
-    let noSamePassword = (rule, value, callback) => {
+    const noSamePassword = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入新密码'))
       } else if (value === this.passwordForm.oldPassword) {
@@ -78,13 +78,13 @@ export default {
     }
   },
   methods: {
-    close () {
+    close() {
       this.$emit('update:visible', false)
     },
-    changePassword (formName) {
+    changePassword(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          let data = {
+          const data = {
             userNum: this.$store.state.user.userNum,
             oldPassword: this.passwordForm.oldPassword,
             newPassword: this.passwordForm.newPassword

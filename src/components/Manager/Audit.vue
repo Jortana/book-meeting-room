@@ -1,25 +1,19 @@
 <template>
   <main>
     <h2>会议室预定审核</h2>
-    <el-tabs
-      class="type-tab"
-      v-model="curRecordType"
-      type="card"
-    >
+    <el-tabs v-model="curRecordType" class="type-tab" type="card">
       <el-tab-pane
-        :lazy="true"
         v-for="(recordType, index) in recordTypes"
+        :lazy="true"
         :key="index"
         :label="recordType.label"
-        :name="recordType.value">
+        :name="recordType.value"
+      >
         <div class="record-table">
           <audit-table :recordType="curRecordType"></audit-table>
         </div>
       </el-tab-pane>
-      <el-tab-pane
-        :lazy="true"
-        label="报告厅"
-        name="hall">
+      <el-tab-pane :lazy="true" label="报告厅" name="hall">
         <hall-audit-table></hall-audit-table>
       </el-tab-pane>
     </el-tabs>
@@ -31,7 +25,11 @@ import AuditTable from './Audit/AuditTable'
 import HallAuditTable from './Audit/HallAuditTable'
 export default {
   name: 'Audit',
-  data () {
+  components: {
+    AuditTable,
+    HallAuditTable
+  },
+  data() {
     return {
       recordTypes: [
         {
@@ -46,12 +44,7 @@ export default {
       curRecordType: 'normal'
     }
   },
-  methods: {
-  },
-  components: {
-    AuditTable,
-    HallAuditTable
-  }
+  methods: {}
 }
 </script>
 

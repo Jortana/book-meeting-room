@@ -1,7 +1,7 @@
 <template>
   <div id="wrapper">
     <div id="main">
-      <div id="login"  @keyup.enter="onSubmit('ruleForm')">
+      <div id="login" @keyup.enter="onSubmit('ruleForm')">
         <h2>会议室管理系统</h2>
         <el-form ref="ruleForm" :model="ruleForm" :rules="rules">
           <el-form-item class="a-left" prop="userNum">
@@ -14,7 +14,9 @@
             <el-input v-model="ruleForm.password" type="password"></el-input>
           </el-form-item>
           <el-form-item id="btn">
-            <el-button type="primary" @click="onSubmit('ruleForm')">登录</el-button>
+            <el-button type="primary" @click="onSubmit('ruleForm')">
+              登录
+            </el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -23,17 +25,11 @@
 </template>
 
 <script>
-let sha1 = require('js-sha1')
+// eslint-disable-next-line no-undef
+const sha1 = require('js-sha1')
 export default {
   name: 'Login',
-  created () {
-    if (window.sessionStorage.getItem('user' || '[]') !== null) {
-      this.$router.replace({
-        path: '/borrow'
-      })
-    }
-  },
-  data () {
+  data() {
     return {
       ruleForm: {
         userNum: '',
@@ -43,25 +39,30 @@ export default {
         userNum: [
           { required: true, message: '请输入学号/工号', trigger: 'change' }
         ],
-        password: [
-          { required: true, message: '请输入密码', trigger: 'change' }
-        ]
+        password: [{ required: true, message: '请输入密码', trigger: 'change' }]
       }
     }
   },
+  created() {
+    if (window.sessionStorage.getItem('user' || '[]') !== null) {
+      this.$router.replace({
+        path: '/borrow'
+      })
+    }
+  },
   methods: {
-    onSubmit (formName) {
+    onSubmit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          let password = sha1(this.ruleForm.password)
+          const password = sha1(this.ruleForm.password)
           this.$axios
             .post('/login', {
               userNum: this.ruleForm.userNum,
               password: password
             })
-            .then(successResponse => {
+            .then((successResponse) => {
               // console.log('a')
-              let data = successResponse.data.data
+              const data = successResponse.data.data
               if (data['isLogin'] === true) {
                 // 登录成功，进入borrow界面
                 this.$store.commit('login', {
@@ -71,17 +72,16 @@ export default {
                   email: data['email'],
                   isManager: data['isManager']
                 })
-                let path = this.$route.query.redirect
+                const path = this.$route.query.redirect
                 this.$router.replace({
-                  path: (path === '/' || path === undefined) ? '/borrow' : path
+                  path: path === '/' || path === undefined ? '/borrow' : path
                 })
               } else {
                 alert('请检查用户名和密码')
                 this.$router.go(0)
               }
             })
-            .catch(() => {
-            })
+            .catch(() => {})
         } else {
           return false
         }
@@ -130,7 +130,7 @@ export default {
   /* + 两边各有一个空格  否则 无效*/
   height: calc(100% + 20px);
   background: inherit;
-  box-shadow: 0 0 0 200px rgba(255, 255, 255, .2) inset;
+  box-shadow: 0 0 0 200px rgba(255, 255, 255, 0.2) inset;
   z-index: -1;
   filter: blur(6px);
   overflow: hidden;
@@ -190,7 +190,7 @@ form {
   padding-bottom: 10px;
 }
 
-@media only screen and (max-width : 768px) {
+@media only screen and (max-width: 768px) {
   #login {
     margin: 0 2.5rem;
     padding-left: 10px;

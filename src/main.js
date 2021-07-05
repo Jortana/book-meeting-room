@@ -17,6 +17,7 @@ import 'vue-happy-scroll/docs/happy-scroll.css'
 Vue.component('happy-scroll', HappyScroll)
 
 // 设置反向代理，前端请求默认发送到 http://后端服务器ip:端口号/api
+// eslint-disable-next-line no-undef
 const axios = require('axios')
 // 实验室
 // axios.defaults.baseURL = 'http://223.2.50.241:8300/api'
@@ -33,11 +34,11 @@ Vue.use(ElementUI)
 
 // 自定义格式化日期的过滤器
 Vue.filter('mdFormatDate', (time) => {
-  let date = new Date(time)
+  const date = new Date(time)
   return formatDate(date, 'MM-dd')
 })
 Vue.filter('formatDate', (time) => {
-  let date = new Date(time)
+  const date = new Date(time)
   return formatDate(date, 'yyyy-MM-dd')
 })
 
@@ -64,13 +65,6 @@ router.beforeEach((to, from, next) => {
       } else if (to.meta.userType === 'all') {
         next()
       }
-    } else {
-      next({
-        path: 'login',
-        query: {
-          redirect: to.fullPath
-        }
-      })
     }
   } else {
     next()
@@ -80,9 +74,9 @@ router.beforeEach((to, from, next) => {
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
-  render: h => h(App),
+  components: { App },
+  render: (h) => h(App),
   router,
   store,
-  components: { App },
   template: '<App/>'
 })

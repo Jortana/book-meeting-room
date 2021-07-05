@@ -1,45 +1,36 @@
 <template>
   <main>
     <h2>用户管理</h2>
-    <el-button type="primary" size="medium" @click="addUserVisible = true">添加用户</el-button>
-    <el-table
-      :data="users"
-      class="user-table">
+    <el-button type="primary" size="medium" @click="addUserVisible = true">
+      添加用户
+    </el-button>
+    <el-table :data="users" class="user-table">
+      <el-table-column prop="userNum" label="工号"></el-table-column>
+      <el-table-column prop="username" label="姓名"></el-table-column>
       <el-table-column
-        prop="userNum"
-        label="工号">
-      </el-table-column>
-      <el-table-column
-        prop="username"
-        label="姓名">
-      </el-table-column>
-      <el-table-column
-        prop="departmentName"
-        label="部门"
         :filters="departments"
         :filter-method="filterDepartment"
-        filter-placement="bottom-end">
+        prop="departmentName"
+        label="部门"
+        filter-placement="bottom-end"
+      >
         <template slot-scope="scope">
-          {{scope.row['departmentName']}}
+          {{ scope.row['departmentName'] }}
         </template>
       </el-table-column>
-      <el-table-column
-        label="用户类型">
+      <el-table-column label="用户类型">
         <template slot-scope="scope">
-          <span v-if="scope.row.isManager === 1">管理员</span>
-          <span v-else-if="scope.row.isManager === 0">普通用户</span>
-          <span v-else>物业管理人员</span>
+          <span>{{ userTypes[scope.row.isManager].label }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        class="remove-label"
-        label="操作">
+      <el-table-column class="remove-label" label="操作">
         <template slot-scope="scope">
           <el-button
             v-popover:removeConfirm
             size="mini"
             type="danger"
-            @click="showConfirm(scope.row)">
+            @click="showConfirm(scope.row)"
+          >
             删除
           </el-button>
         </template>
@@ -47,35 +38,44 @@
     </el-table>
     <!-- 确认删除用户的的dialog -->
     <el-dialog
-      title="确认删除"
       :visible.sync="confirmVisible"
+      title="确认删除"
       width="28%"
       class="user-dialog-container"
-      center>
+      center
+    >
       <span>确认删除吗？</span>
       <span slot="footer" class="dialog-footer">
-          <el-button @click="confirmVisible = false">取 消</el-button>
-          <el-button type="primary" @click="removeUser">确 定</el-button>
-        </span>
+        <el-button @click="confirmVisible = false">取 消</el-button>
+        <el-button type="primary" @click="removeUser">确 定</el-button>
+      </span>
     </el-dialog>
     <!-- 添加用户的表单 -->
     <el-dialog
-      title="添加用户"
       :visible.sync="addUserVisible"
+      title="添加用户"
       width="28%"
       class="user-dialog-container"
-      center>
+      center
+    >
       <el-form
-        class="password-form"
+        ref="passwordForm"
         :model="addUserForm"
         :rules="addUserRules"
-        ref="passwordForm"
-        label-width="80px">
+        class="password-form"
+        label-width="80px"
+      >
         <el-form-item label="工号" prop="userNum">
-          <el-input v-model="addUserForm.userNum" auto-complete="off"></el-input>
+          <el-input
+            v-model="addUserForm.userNum"
+            auto-complete="off"
+          ></el-input>
         </el-form-item>
         <el-form-item label="姓名" prop="username">
-          <el-input v-model="addUserForm.username" auto-complete="off"></el-input>
+          <el-input
+            v-model="addUserForm.username"
+            auto-complete="off"
+          ></el-input>
         </el-form-item>
         <el-form-item label="手机号码" prop="phone">
           <el-input v-model="addUserForm.phone" auto-complete="off"></el-input>
@@ -84,20 +84,26 @@
           <el-input v-model="addUserForm.email" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="用户类型" prop="userType">
-          <el-select class="full-width" v-model="addUserForm.userType" placeholder="请选择用户类型">
+          <el-select
+            v-model="addUserForm.userType"
+            class="full-width"
+            placeholder="请选择用户类型"
+          >
             <el-option
               v-for="type in userTypes"
               :key="type.value"
               :label="type.label"
-              :value="type.value">
-            </el-option>
+              :value="type.value"
+            ></el-option>
           </el-select>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-          <el-button @click="addUserVisible = false">取 消</el-button>
-          <el-button type="primary" @click="addUser('passwordForm')">确 定</el-button>
-        </span>
+        <el-button @click="addUserVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addUser('passwordForm')">
+          确 定
+        </el-button>
+      </span>
     </el-dialog>
   </main>
 </template>
@@ -105,11 +111,7 @@
 <script>
 export default {
   name: 'Users',
-  created () {
-    this.getAllUser()
-    this.getAllDepartment()
-  },
-  data () {
+  data() {
     return {
       users: [],
       departments: [],
@@ -118,37 +120,45 @@ export default {
       addUserVisible: false,
       addUserForm: {},
       userTypes: [
-        { label: '普通用户', value: 0 },
-        { label: '管理员', value: 1 },
-        { label: '学生', value: 2 },
+        { label: '管理员', value: 0 },
+        { label: '教室管理员', value: 1 },
+        { label: '普通用户', value: 2 },
         { label: '物业管理人员', value: 3 }
       ],
       addUserRules: {
-        userNum: [
-          { required: true, message: '请输入工号', trigger: 'blur' }
-        ],
-        username: [
-          { required: true, message: '请输入姓名', trigger: 'blur' }
-        ],
+        userNum: [{ required: true, message: '请输入工号', trigger: 'blur' }],
+        username: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
         userType: [
           { required: true, message: '请选择用户类型', trigger: 'change' }
         ],
         phone: [
-          { pattern: /^[1](([3][0-9])|([4][5-9])|([5][0-3,5-9])|([6][5,6])|([7][0-8])|([8][0-9])|([9][1,8,9]))[0-9]{8}$/, message: '请正确填写手机号码', trigger: 'blur' }
+          {
+            pattern: /^[1](([3][0-9])|([4][5-9])|([5][0-3,5-9])|([6][5,6])|([7][0-8])|([8][0-9])|([9][1,8,9]))[0-9]{8}$/,
+            message: '请正确填写手机号码',
+            trigger: 'blur'
+          }
         ],
         email: [
-          { pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/, message: '请正确填写电子邮箱地址', trigger: 'blur' }
+          {
+            pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
+            message: '请正确填写电子邮箱地址',
+            trigger: 'blur'
+          }
         ]
       }
     }
   },
+  created() {
+    this.getAllUser()
+    this.getAllDepartment()
+  },
   methods: {
-    getAllDepartment () {
+    getAllDepartment() {
       this.$axios
         .get('/queryDepartment')
-        .then(successResponse => {
-          let departments = []
-          for (let department of successResponse.data) {
+        .then((successResponse) => {
+          const departments = []
+          for (const department of successResponse.data) {
             departments.push({
               text: department['departmentName'],
               value: department['departmentName']
@@ -166,10 +176,10 @@ export default {
           })
         })
     },
-    getAllUser () {
+    getAllUser() {
       this.$axios
         .get('/getAllUser')
-        .then(successResponse => {
+        .then((successResponse) => {
           this.users = successResponse.data
         })
         .catch(() => {
@@ -182,16 +192,16 @@ export default {
           })
         })
     },
-    showConfirm (user) {
+    showConfirm(user) {
       this.confirmVisible = true
       this.curUser = user
     },
-    removeUser () {
+    removeUser() {
       this.$axios
         .post('/delUser', {
           userNum: this.curUser.userNum
         })
-        .then(successResponse => {
+        .then((successResponse) => {
           if (successResponse.data === true) {
             this.$message({
               showClose: true,
@@ -222,7 +232,7 @@ export default {
         })
       this.confirmVisible = false
     },
-    addUser (formName) {
+    addUser(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$axios
@@ -233,7 +243,7 @@ export default {
               phone: this.addUserForm.phone,
               email: this.addUserForm.email
             })
-            .then(successResponse => {
+            .then((successResponse) => {
               if (successResponse.data === true) {
                 this.$message({
                   showClose: true,
@@ -277,7 +287,7 @@ export default {
         }
       })
     },
-    filterDepartment (value, row) {
+    filterDepartment(value, row) {
       return row['departmentName'] === value
     }
   }
@@ -291,7 +301,7 @@ main >>> thead {
 }
 
 .user-table {
-  border-top: 1px solid #DCDFE6;
+  border-top: 1px solid #dcdfe6;
   margin-top: 1rem;
 }
 
@@ -299,7 +309,7 @@ main >>> thead {
   width: 100%;
 }
 
-@media only screen and (max-width : 768px) {
+@media only screen and (max-width: 768px) {
   .user-dialog-container >>> .el-dialog {
     width: 90% !important;
   }
@@ -313,13 +323,13 @@ main >>> thead {
   }
 }
 
-@media only screen and (max-width : 376px) {
+@media only screen and (max-width: 376px) {
   .user-table >>> thead {
-    font-size: .9rem;
+    font-size: 0.9rem;
   }
 
   .user-table >>> td {
-    font-size: .8rem;
+    font-size: 0.8rem;
   }
 }
 </style>
