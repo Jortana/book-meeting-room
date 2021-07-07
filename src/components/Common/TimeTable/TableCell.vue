@@ -24,7 +24,7 @@
         </div>
       </el-scrollbar>
       <transition
-        v-if="this.$store.state.user.isManager !== 2"
+        v-if="this.$store.state.user.isManager !== 3"
         name="el-zoom-in-bottom"
       >
         <div v-show="showApply" class="apply-btn-container transition-box">

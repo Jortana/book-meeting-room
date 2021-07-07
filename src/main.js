@@ -65,6 +65,10 @@ router.beforeEach((to, from, next) => {
       } else if (to.meta.userType === 'all') {
         next()
       }
+    } else {
+      next({
+        path: '/'
+      })
     }
   } else {
     next()
