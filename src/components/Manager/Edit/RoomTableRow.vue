@@ -112,7 +112,6 @@
     <el-form-item prop="picture" class="input-cell img-cell">
       <el-upload
         :http-request="uploadImg"
-        :on-success="imgSuccessRes"
         :limit="1"
         :show-file-list="false"
         action=""
@@ -195,7 +194,6 @@ export default {
     },
     roomInfo: {
       handler(newRoomInfo) {
-        console.log('watch')
         this.curRoomInfo = newRoomInfo
       },
       deep: true
@@ -333,7 +331,6 @@ export default {
         data: data
       })
         .then((successResponse) => {
-          console.log(successResponse.data)
           if (successResponse.data.success === true) {
             // this.curRoomInfo = this.changedRoomInfo
             const roomInfo = Object.assign({}, this.editForm)
@@ -365,11 +362,6 @@ export default {
             offset: 80
           })
         })
-    },
-    imgSuccessRes(response, file, fileList) {
-      console.log(response)
-      console.log(file)
-      console.log(fileList)
     },
     banRoom(ban) {
       this.$axios

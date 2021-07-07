@@ -54,7 +54,6 @@ export default {
       })
         .then((response) => {
           const users = response.data.map((users) => {
-            // console.log(users)
             return {
               value: users['departmentID'],
               label: users['departmentName'],
@@ -112,7 +111,6 @@ export default {
         }
       })
         .then((response) => {
-          console.log(response)
           if (response.data.result > 0) {
             this.$message({
               showClose: true,
